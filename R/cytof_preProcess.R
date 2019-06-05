@@ -138,13 +138,13 @@ cytof_exprsExtract <- function(fcsFile,
         fcs <- applyComp(fcs, comp)
         cat("    Compensation is applied on", fcsFile, "\n")
     }else if(isTRUE(comp)) {
-        # See discussion at
+        # See discussion keywords at
         # https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2892967/#S2title
-        comp_matrix <- fcs@description[["$SPILLOVER"]]
+        comp_matrix <- fcs@description[["$SPILLOVER"]]  # FCS 3.1
         if(is.null(comp_matrix)) {
             comp_matrix <- fcs@description[["SPILL"]]
             if(is.null(comp_matrix)) {
-                comp_matrix <- fcs@description[["$COMP"]]
+                comp_matrix <- fcs@description[["$COMP"]]  # FCS 3.0
             }
         }
         if(!is.null(comp_matrix)) {

@@ -168,13 +168,13 @@ cytofkit_GUI <- function() {
             icon = "info", type = "ok")
     }
     
-    fixedNum_help <- function() {
-        tkmessageBox(title = "fixedNum", message = "Up to fixedNum of cells from each fcs file are used for analysis.", 
-            icon = "info", type = "ok")
-    }
-    
     rPk_help <- function() {
         tkmessageBox(title = "Rphenograph K", message = "Number of nearest neighbours to pass to Rphenograph.", 
+                     icon = "info", type = "ok")
+    }
+    
+    tSk_help <- function() {
+        tkmessageBox(title = "tSNE", message = "Number of nearest neighbours to pass to tSNE.", 
                      icon = "info", type = "ok")
     }
     
@@ -329,10 +329,9 @@ cytofkit_GUI <- function() {
                    width = 9), side = "right")
     tkpack(tklabel(merge_method_rbuts, text = "Fixed Number :"), 
         side = "right")
-    tkpack(tklabel(merge_method_rbuts, text = "                 "), 
+    tkpack(tklabel(merge_method_rbuts, text = "                 "),
         side = "left")
-    fixedNum_hBut <- tkbutton(tt, image = image2, command = fixedNum_help)
-    
+
     ## transformMethod
     transformMethod_label <- tklabel(tt, text = "Transformation Method :")
     transformMethod_hBut <- tkbutton(tt, image = image2,
@@ -372,21 +371,34 @@ cytofkit_GUI <- function() {
     tkpack(tkcheckbutton(clusterMethods_cbuts, text = clusterMethods[5], 
                          variable = eval(clusterSelect[5])), side = "left")
     
-    ## cluster param (Rphenograph_k and FlowSOM_k)
-    rphenoK_label <- tklabel(tt, text = "Rphenograph_k:")
-    rphenoK_hBut <- tkbutton(tt, image = image2, command = rPk_help)
-    cluster_Param <- tkframe(tt)
-    tkpack(tklabel(cluster_Param, text = " "), side = "left")
-    tkpack(tkentry(cluster_Param, textvariable = Rphenograph_k, width = 4), side = "left")
-    tkpack(tklabel(cluster_Param, text = "                 "), side = "left")
-    tkpack(tklabel(cluster_Param, text = "tsne Perplexity"), side = "left")
-    tkpack(tkentry(cluster_Param, textvariable = tsne_perp, width = 4), side = "left")
-    tkpack(tklabel(cluster_Param, text = "tsne Max Iterations"), side = "left")
-    tkpack(tkentry(cluster_Param, textvariable = tsne_maxIter, width = 4), side = "left")
-    tkpack(tkbutton(cluster_Param, image = image2, command = fSk_help), side = "right")
-    tkpack(tkentry(cluster_Param, textvariable = FlowSOM_k, width = 4), side = "right")
-    tkpack(tklabel(cluster_Param, text = "FlowSOM_k:"), side = "right")
+    ## Rphenograph param
+    rphenoPar_label <- tklabel(tt, text = "Rphenograph Options :")
+    rphenoPar_hBut <- tkbutton(tt, image = image2, command = rPk_help)
+    rpheno_Param <- tkframe(tt)
+    tkpack(tklabel(rpheno_Param, text = " "), side = "left")
+    tkpack(tklabel(rpheno_Param, text = "k neighbors :"), side = "left")
+    tkpack(tkentry(rpheno_Param, textvariable = Rphenograph_k, width = 4), side = "left")
+
+    ## tSNE param
+    tsnePar_label <- tklabel(tt, text = "tSNE Options :")
+    tsnePar_hBut <- tkbutton(tt, image = image2, command = rPk_help)
+    tsne_Param <- tkframe(tt)
+    tkpack(tklabel(tsne_Param, text = " "), side = "left")
+    tkpack(tklabel(tsne_Param, text = "Perplexity :"), side = "left")
+    tkpack(tkentry(tsne_Param, textvariable = tsne_perp, width = 4), side = "left")
+    tkpack(tklabel(tsne_Param, text = "    Max iterations :"), side = "left")
+    tkpack(tkentry(tsne_Param, textvariable = tsne_maxIter, width = 6), side = "left")
+    # tkpack(tklabel(tsne_Param, text = "    Theta :"), side = "left")
+    # tkpack(tkentry(tsne_Param, textvariable = tsne_theta, width = 4), side = "left")
     
+    ## FlowSOM param
+    flowsomPar_label <- tklabel(tt, text = "FlowSOM Options :")
+    flowsomPar_hBut <- tkbutton(tt, image = image2, command = fSk_help)
+    flowsom_Param <- tkframe(tt)
+    tkpack(tklabel(flowsom_Param, text = " "), side = "left")
+    tkpack(tklabel(flowsom_Param, text = "k meta clusters :"), side = "left")
+    tkpack(tkentry(flowsom_Param, textvariable = FlowSOM_k, width = 4), side = "left")
+
     ## visualizationMethods
     visualizationMethods_label <- tklabel(tt, text = "Visualization Method(s) :")
     visualizationMethods_hBut <- tkbutton(tt, image = image2,
@@ -454,32 +466,45 @@ cytofkit_GUI <- function() {
     tkgrid.configure(projectName_hBut, sticky = "e")
     
     tkgrid(mergeMethod_label, mergeMethod_hBut, merge_method_rbuts, 
-        fixedNum_hBut, padx = cell_width)
+        padx = cell_width)
     tkgrid.configure(mergeMethod_label, sticky = "e")
     tkgrid.configure(mergeMethod_hBut, sticky = "e")
     tkgrid.configure(merge_method_rbuts, sticky = "w")
-    tkgrid.configure(fixedNum_hBut, sticky = "w")
-    
+
     tkgrid(transformMethod_label, transformMethod_hBut, transformMethod_rbuts,
         padx = cell_width)
     tkgrid.configure(transformMethod_label, sticky = "e")
     tkgrid.configure(transformMethod_rbuts, sticky = "w")
     tkgrid.configure(transformMethod_hBut, sticky = "e")
     
+    tkgrid(tklabel(tt, text = ""), padx = cell_width)
+
     tkgrid(cluster_label, cluster_hBut, clusterMethods_cbuts, padx = cell_width)
     tkgrid.configure(cluster_label, sticky = "e")
     tkgrid.configure(clusterMethods_cbuts, sticky = "w")
     tkgrid.configure(cluster_hBut, sticky = "e")
     
-    tkgrid(rphenoK_label, rphenoK_hBut, cluster_Param, padx = cell_width)
-    tkgrid.configure(rphenoK_label, rphenoK_hBut, sticky = "e")
-    tkgrid.configure(cluster_Param, sticky = "w")
+    tkgrid(rphenoPar_label, rphenoPar_hBut, rpheno_Param, padx = cell_width)
+    tkgrid.configure(rphenoPar_label, rphenoPar_hBut, sticky = "e")
+    tkgrid.configure(rpheno_Param, sticky = "w")
+    
+    tkgrid(tsnePar_label, tsnePar_hBut, tsne_Param, padx = cell_width)
+    tkgrid.configure(tsnePar_label, tsnePar_hBut, sticky = "e")
+    tkgrid.configure(tsne_Param, sticky = "w")
+    
+    tkgrid(flowsomPar_label, flowsomPar_hBut, flowsom_Param, padx = cell_width)
+    tkgrid.configure(flowsomPar_label, flowsomPar_hBut, sticky = "e")
+    tkgrid.configure(flowsom_Param, sticky = "w")
+    
+    tkgrid(tklabel(tt, text = ""), padx = cell_width)
     
     tkgrid(visualizationMethods_label, visualizationMethods_hBut, 
         visualizationMethods_cbuts, padx = cell_width)
     tkgrid.configure(visualizationMethods_label, sticky = "e")
     tkgrid.configure(visualizationMethods_cbuts, sticky = "w")
     tkgrid.configure(visualizationMethods_hBut, sticky = "e")
+    
+    tkgrid(tklabel(tt, text = ""), padx = cell_width)
     
     tkgrid(progressionMethod_label, progressionMethod_hBut, progressionMethod_rbuts, 
            padx = cell_width)
