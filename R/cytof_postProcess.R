@@ -90,7 +90,7 @@ cytof_writeResults <- function(analysis_results,
     if(saveToFiles){
         ## save exprs
         ifMultiFCS <- length(unique(sub("_[0-9]*$", "", row.names(exprs)))) > 1
-        write.csv(exprs, paste0(projectName, "_markerFiltered_transformed_merged_exprssion_data.csv"))
+        write.csv(exprs, paste0(projectName, "_markerFiltered_transformed_merged_expression_data.csv"))
         
         ## save dimReducedData
         for(i in 1:length(dimReducedData)){
@@ -851,7 +851,7 @@ cytof_addToFCS <- function(data,
         R_N_transformed <- apply(N_transformed,2,ilgcl)
         ## linear transformation of tSNE
         R_N_transformed_l <- apply(transformed, 2, function(x) (x - min(x)) + 0.1)  
-        colnames(R_N_transformed_l) <- paste0(colnames(R_N_transformed_l), "_linear", sep = "")
+        colnames(R_N_transformed_l) <- paste0(colnames(R_N_transformed_l), "_linear")
         
         ## output both ilgcl and linear transformaton of tSNE for visualization on flowJo
         R_N_transformed <- cbind(R_N_transformed, R_N_transformed_l)
@@ -942,7 +942,8 @@ cytof_addToFCS <- function(data,
             channel_name <- addColName
             minRange <- ceiling(min(to_add_i[[j]]))
             maxRange <- ceiling(max(to_add_i[[j]]))
-            channel_range <- maxRange - minRange
+            # channel_range <- maxRange - minRange
+            channel_range <- maxRange + 1
             
             plist <- matrix(c(channel_name, "<NA>", channel_range, 
                 minRange, maxRange))
@@ -964,18 +965,23 @@ cytof_addToFCS <- function(data,
                   x
                 }
             })
-            keyval[[paste("$P", channel_number, "B", sep = "")]] <- "32"  # Number of bits
-            keyval[[paste("$P", channel_number, "R", sep = "")]] <- toString(channel_range)  # Range
-            keyval[[paste("$P", channel_number, "E", sep = "")]] <- "0,0"  # Exponent
-            keyval[[paste("$P", channel_number, "N", sep = "")]] <- channel_name  # Name
-            keyval[[paste("P", channel_number, "BS", sep = "")]] <- 0
-            keyval[[paste("P", channel_number, "MS", sep = "")]] <- 0
-            keyval[[paste("P", channel_number, "DISPLAY", sep = "")]] <- "LIN"  # data display
+            keyval[[paste0("$P", channel_number, "B")]] <- "32"  # Number of bits
+            keyval[[paste0("$P", channel_number, "R")]] <- toString(channel_range)  # Range
+            keyval[[paste0("$P", channel_number, "E")]] <- "0,0"  # Exponent
+            keyval[[paste0("$P", channel_number, "N")]] <- channel_name  # Name
+            keyval[[paste0("P", channel_number, "BS")]] <- 0
+            keyval[[paste0("P", channel_number, "MS")]] <- 0
+            keyval[[paste0("P", channel_number, "DISPLAY")]] <- "LIN"  # data display
             #add keyval for clusterID and annotation
         }
         
         pData(params) <- pd
         out_frame <- flowFrame(exprs = sub_exprs, parameters = params, description = keyval)
+
+        #### similar to changes made on 23 Jan 2019 by jinmiao chen
+        #### to ensure tsne and clustering show on flowjo
+        out_frame <- out_frame[,c((ncol(fcs@exprs)+1):ncol(out_frame@exprs),1:ncol(fcs@exprs))]
+        ####
         
         suppressWarnings(write.FCS(out_frame, paste0(analyzedFCSdir, "/cytofkit_", sample[i], ".fcs")))
     }

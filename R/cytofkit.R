@@ -150,9 +150,10 @@ cytofkit <- function(fcsFiles = getwd(),
     if (is.null(fcsFiles) || is.na(fcsFiles) || is.nan(fcsFiles)){
         stop("Wrong input fcsFiles!")
     }else if (length(fcsFiles) == 1 && file.info(fcsFiles)$isdir) {
+        rawFCSdir <- fcsFiles  # argument is a directory in fact
         fcsFiles <- list.files(path = fcsFiles, pattern = ".fcs$", 
             full.names = TRUE)
-        rawFCSdir <- dirname(fcsFiles)
+        # rawFCSdir <- dirname(fcsFiles)
     }else{
         if(dirname(fcsFiles[1]) == "."){
             rawFCSdir <- getwd()

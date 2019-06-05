@@ -1,17 +1,21 @@
 #' Subset detection by clustering
-#' 
-#' Apply clustering algorithms to detect cell subsets. \code{DensVM} and \code{ClusterX} 
-#' clustering is based on the transformed ydata and uses xdata to train the model. 
-#' \code{Rphenograph} directly works on high dimensional xdata. \code{FlowSOM} is 
-#' integrated from FlowSOM pacakge (https://bioconductor.org/packages/release/bioc/html/FlowSOM.html).
-#' 
+#'
+#' Apply clustering algorithms to detect cell subsets. \code{DensVM} clustering
+#' is based on the transformed ydata and uses xdata to train the model.
+#' \code{ClusterX} clustering works on the transformed ydata (data obtained from
+#' a tSNE reduction). \code{Rphenograph} and \code{FlowSOM} directly work on high
+#' dimensional xdata. \code{FlowSOM} is integrated from FlowSOM package
+#' (https://bioconductor.org/packages/release/bioc/html/FlowSOM.html).
+#'
 #' @param ydata A matrix of the dimension reduced data.
 #' @param xdata A matrix of the expression data.
-#' @param method Cluster method including \code{DensVM}, \code{densityClustX}, \code{Rphenograph} and \code{FlowSOM}.
-#' @param Rphenograph_k Integer number of nearest neighbours to pass to Rphenograph.
+#' @param method Cluster method including \code{DensVM}, \code{densityClustX},
+#'   \code{Rphenograph} and \code{FlowSOM}.
+#' @param Rphenograph_k Integer number of nearest neighbours to pass to
+#'   Rphenograph.
 #' @param FlowSOM_k Number of clusters for meta clustering in FlowSOM.
 #' @param flowSeed Integer to set a seed for FlowSOM for reproducible results.
-#' 
+#'
 #' @return a vector of the clusters assigned for each row of the ydata
 #' @export
 #' @examples
