@@ -31,7 +31,7 @@
 #' \code{install.packages("https://github.com/igraph/rigraph/releases/download/v1.1.0/igraph_1.1.0.zip", repos=NULL, method="libcurl")}
 cytof_dimReduction <- function(data,
                                markers = NULL,
-                               method = c("tsne", "pca", "isomap", "diffusionmap", "NULL"), 
+                               method = c("tsne", "pca", "isomap", "diffusionmap", "umap", "NULL"), 
                                distMethod = "euclidean", 
                                out_dim = 2,
                                tsneSeed = 42,
@@ -61,6 +61,23 @@ cytof_dimReduction <- function(data,
     }
     
     marker_filtered_data <- data[, marker_id]
+
+    # Function to merge default options with dots arguments
+    merge_options <- function(prefix, defaults, dots) {
+        prefix.patt <- paste0("^", prefix, "\\.")
+        prefix.dots <- grep(prefix.patt, names(dots))
+        if (length(prefix.dots)) {
+            # extract specific options and remove prefix
+            new.names <- gsub(prefix.patt, "", names(dots[prefix.dots]))
+            prefix.dots <- dots[prefix.dots]
+            names(prefix.dots) <- new.names
+            # merge arguments and defaults
+            prefix.opts <- c(prefix.dots, defaults)
+            prefix.opts <- prefix.opts[unique(names(prefix.opts))]
+        } else
+            prefix.opts <- defaults
+        list(options = prefix.opts)
+    }
     
     method <- match.arg(method)
     if(method == "NULL"){
@@ -138,7 +155,27 @@ cytof_dimReduction <- function(data,
                    }
                    mapped <- ord$points
                }
-           })
+           },
+           umap={
+               cat("  Running UMAP...with seed", tsneSeed)
+               if(is.numeric(tsneSeed))
+                   set.seed(tsneSeed) # Set a seed if you want reproducible results
+               # default umap arguments
+               umap.opts <- list(
+                   X = marker_filtered_data,          
+                   n_neighbors = 15,      # as used by E. Becht
+                   min_dist = 0.2,        # as used by E. Becht
+                   metric = "euclidean",  # default metric
+                   n_components = 2,      # fixed, although out_dim is passed
+                   scale = "colrange",    # same as default scaling in tSNE
+                   ret_model = TRUE       # allow mapping new data
+               )
+               # merge options and execute
+               umap.opts <- merge_options("umap", umap.opts, list(...))
+               umap_out <- do.call(uwot::umap, umap.opts[["options"]])
+               mapped <- umap_out$embedding
+           }
+    )
     
     ## extract out_dim dimensions, organize output
     if(!is.null(mapped)){

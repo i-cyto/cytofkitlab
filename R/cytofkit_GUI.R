@@ -23,7 +23,7 @@ cytofkit_GUI <- function() {
     cur_dir <- getwd()
     mergeMethods <- c("all", "min", "ceil", "fixed")
     transformMethods <- c("autoLgcl", "cytofAsinh", "logicle", "none")
-    vizMethods <- c("pca", "isomap", "tsne", "NULL")
+    vizMethods <- c("pca", "isomap", "tsne", "umap", "NULL")
     clusterMethods <- c("Rphenograph", "ClusterX", "DensVM", "FlowSOM", "NULL")
     progressionMethods <- c("diffusionmap", "isomap", "NULL")
     fixedLgclParas = c(l_w = 0.5, l_t = 500000, l_m = 4.5, l_a = 0)
