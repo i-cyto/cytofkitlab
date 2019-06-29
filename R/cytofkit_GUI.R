@@ -23,6 +23,7 @@ cytofkit_GUI <- function() {
     cur_dir <- getwd()
     mergeMethods <- c("all", "min", "ceil", "fixed")
     transformMethods <- c("autoLgcl", "cytofAsinh", "logicle", "none")
+    dimReductionMethods <- c("pca", "tsne", "umap")
     vizMethods <- c("pca", "isomap", "tsne", "umap", "NULL")
     clusterMethods <- c("Rphenograph", "ClusterX", "DensVM", "FlowSOM", "NULL")
     progressionMethods <- c("diffusionmap", "isomap", "NULL")
@@ -36,6 +37,7 @@ cytofkit_GUI <- function() {
     fixedNum <- tclVar("5000")
     markers <- tclVar("")
     transformMethod <- tclVar("autoLgcl")
+    dimReductionMethod <- tclVar("tsne")
     progressionMethod <- tclVar("NULL")
     Rphenograph_k <- tclVar("30")
     tsne_perp <- tclVar("30")
@@ -195,6 +197,11 @@ cytofkit_GUI <- function() {
             icon = "info", type = "ok")
     }
     
+    dimReductionMethod_help <- function() {
+        tkmessageBox(title = "dimreductionMethod", message = "ClusterX and DensVM use dimension reduced data (typically tSNE 2D map) in order to compute clusters. Select UMAP alternatively. Select PCA to get a fast dimension reduction result.", 
+                     icon = "info", type = "ok")
+    }
+    
     cluster_help <- function() {
         tkmessageBox(title = "clusterMethods", message = "The method(s) for clustering, including \"DensVM\", \"ClusterX\", \"Rphenograph\", and \"FlowSOM\". \n\nIf \"NULL\" was selected, no clustering will be performed.", 
             icon = "info", type = "ok")
@@ -224,6 +231,7 @@ cytofkit_GUI <- function() {
         tclvalue(fixedNum) = "5000"
         tclvalue(markers) = ""
         tclvalue(transformMethod) = "autoLgcl"
+        tclvalue(dimReductionMethod) = "tsne"
         tclvalue(clusterSelect[1]) = "1"
         tclvalue(clusterSelect[2]) = "0"
         tclvalue(clusterSelect[3]) = "0"
@@ -408,6 +416,20 @@ cytofkit_GUI <- function() {
     tkpack(tklabel(flowsom_Param, text = "k meta clusters :"), side = "left")
     tkpack(tkentry(flowsom_Param, textvariable = FlowSOM_k, width = 4), side = "left")
 
+    ## dimReductionMethod
+    dimReductionMethod_label <- tklabel(tt, text = "DimReduction Method :")
+    dimReductionMethod_hBut <- tkbutton(tt, image = image2,
+                                     command = dimReductionMethod_help)
+    dimReductionMethod_rbuts <- tkframe(tt)
+    tkpack(tklabel(dimReductionMethod_rbuts, text = ""), side = "left")
+    tkpack(tkradiobutton(dimReductionMethod_rbuts, text = dimReductionMethods[1], 
+                         variable = dimReductionMethod, value = dimReductionMethods[1]), side = "left")
+    tkpack(tkradiobutton(dimReductionMethod_rbuts, text = dimReductionMethods[2],
+                         variable = dimReductionMethod, value = dimReductionMethods[2]), side = "left")
+    tkpack(tkradiobutton(dimReductionMethod_rbuts, text = dimReductionMethods[3],
+                         variable = dimReductionMethod, value = dimReductionMethods[3]), side = "left")
+
+    
     ## visualizationMethods
     visualizationMethods_label <- tklabel(tt, text = "Visualization Method(s) :")
     visualizationMethods_hBut <- tkbutton(tt, image = image2,
@@ -511,6 +533,12 @@ cytofkit_GUI <- function() {
     tkgrid.configure(flowsomPar_label, flowsomPar_hBut, sticky = "e")
     tkgrid.configure(flowsom_Param, sticky = "w")
     
+    tkgrid(dimReductionMethod_label, dimReductionMethod_hBut, dimReductionMethod_rbuts,
+           padx = cell_width)
+    tkgrid.configure(dimReductionMethod_label, sticky = "e")
+    tkgrid.configure(dimReductionMethod_rbuts, sticky = "w")
+    tkgrid.configure(dimReductionMethod_hBut, sticky = "e")
+    
     tkgrid(tklabel(tt, text = ""), padx = cell_width)
     
     tkgrid(visualizationMethods_label, visualizationMethods_hBut, 
@@ -577,7 +605,7 @@ cytofkit_GUI <- function() {
         inputs[["mergeMethod"]] <- tclvalue(mergeMethod)
         inputs[["fixedNum"]] <- suppressWarnings(as.numeric(tclvalue(fixedNum)))
         inputs[["transformMethod"]] <- tclvalue(transformMethod)
-        inputs[["dimReductionMethod"]] <- "tsne"
+        inputs[["dimReductionMethod"]] <- tclvalue(dimReductionMethod)
         inputs[["clusterMethods"]] <- clusterMethods[clusterCheck]
         inputs[["visualizationMethods"]] <- vizMethods[vizCheck]
         inputs[["progressionMethod"]] <- tclvalue(progressionMethod)
