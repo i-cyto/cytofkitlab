@@ -157,7 +157,7 @@ cytof_dimReduction <- function(data,
                }
            },
            umap={
-               cat("  Running UMAP...with seed", tsneSeed)
+               cat("  Running UMAP...with seed ", tsneSeed)
                if(is.numeric(tsneSeed))
                    set.seed(tsneSeed) # Set a seed if you want reproducible results
                # default umap arguments
@@ -168,6 +168,7 @@ cytof_dimReduction <- function(data,
                    metric = "euclidean",  # default metric
                    n_components = 2,      # fixed, although out_dim is passed
                    scale = "colrange",    # same as default scaling in tSNE
+                   n_threads = max(1, RcppParallel::defaultNumThreads()-1),
                    ret_model = TRUE       # allow mapping new data
                )
                # merge options and execute

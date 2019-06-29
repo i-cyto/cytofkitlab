@@ -66,9 +66,9 @@ cytof_writeResults <- function(analysis_results,
     if(!dir.exists(rawFCSdir)){
         if(saveToFCS){
             saveToFCS <- FALSE
-            warning("Can not find the path for original FCS files. Data cannnot be
+            warning("Can not find the path for original FCS files. Data cannot be
                     saved to new copies of FCS files. Please provide the correct path
-                    to parameter rawFCSdir.")
+                    to parameter rawFCSdir. Currently: ", rawFCSdir)
         }
     }
      
