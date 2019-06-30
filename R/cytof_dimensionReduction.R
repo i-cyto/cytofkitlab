@@ -84,6 +84,7 @@ cytof_dimReduction <- function(data,
         return(NULL)
     }
     
+    start_time <- Sys.time()
     switch(method,
            tsne={
                cat("  Running t-SNE...with seed", tsneSeed)
@@ -188,6 +189,7 @@ cytof_dimReduction <- function(data,
         colnames(mapped) <- paste(method, c(1:out_dim), sep = "_")
         rownames(mapped) <- rnames
     }
-    cat("  DONE\n")
+    end_time <- Sys.time()
+    cat("  DONE in", round(end_time - start_time, 2), "s\n")
     return(mapped)
 } 

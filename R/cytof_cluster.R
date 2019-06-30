@@ -37,6 +37,7 @@ cytof_cluster <- function(ydata = NULL,
     if(method == "NULL"){
         return(NULL)
     }
+    start_time <- Sys.time()
     switch(method, 
            Rphenograph = {
                cat("  Running PhenoGraph...")
@@ -65,7 +66,8 @@ cytof_cluster <- function(ydata = NULL,
         }else if(!is.null(ydata) && !is.null(row.names(ydata))){
             names(clusters) <- row.names(ydata)
         }
-        cat(" DONE!\n")
+        end_time <- Sys.time()
+        cat("  DONE in", round(end_time - start_time, 2), "s\n")
         return(clusters)
     }
 }
