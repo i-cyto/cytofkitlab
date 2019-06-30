@@ -73,7 +73,7 @@ Rphenograph <- function(data, k=30){
     t4 <- system.time(community <- cluster_louvain(g))
     cat("DONE ~",t4[3],"s\n")
     
-    message("Run Rphenograph DONE, took a total of ", sum(c(t1[3],t2[3],t3[3],t4[3])), "s.")
+    message("Run Rphenograph DONE, took a total of ", round(sum(c(t1[3],t2[3],t3[3],t4[3])), 2), "s.")
     cat("  Return a community class\n  -Modularity value:", modularity(community),"\n")
     cat("  -Number of clusters:", length(unique(membership(community))))
     

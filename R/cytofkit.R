@@ -133,9 +133,9 @@ cytofkit <- function(fcsFiles = getwd(),
                      transformMethod = c("autoLgcl", "cytofAsinh", "logicle", "arcsinh", "none"), 
                      mergeMethod = c("ceil", "all", "min", "fixed"), 
                      fixedNum = 10000, 
-                     dimReductionMethod = c("tsne", "pca", "isomap"), 
+                     dimReductionMethod = c("tsne", "pca", "isomap", "umap"), 
                      clusterMethods = c("Rphenograph", "ClusterX", "DensVM", "FlowSOM", "NULL"), 
-                     visualizationMethods = c("tsne", "pca", "isomap", "NULL"), 
+                     visualizationMethods = c("tsne", "pca", "isomap", "umap", "NULL"), 
                      progressionMethod = c("NULL", "diffusionmap", "isomap"),
                      Rphenograph_k = 30,
                      FlowSOM_k = 40,
@@ -177,7 +177,7 @@ cytofkit <- function(fcsFiles = getwd(),
     mergeMethod <- match.arg(mergeMethod)
     
     if (!is.null(fixedNum) && !(is.numeric(fixedNum))) 
-        stop("clusterSampleSize must be a numeric number!")
+        stop("fixedNum must be a numeric number!")
     
     transformMethod <- match.arg(transformMethod)
     dimReductionMethod <- match.arg(dimReductionMethod) 
@@ -220,33 +220,64 @@ cytofkit <- function(fcsFiles = getwd(),
     cat(visualizationMethods, "\n")
     cat("* Subset progression analysis method: ")
     cat(progressionMethod, "\n\n")
-    
+
+    ## split ... arguments
+    dots <- list(...)
+    # dimension reduction args
+    dots.dr.idx <- sapply(
+        c("tsne", "pca", "isomap", "umap"),
+        function(x) {
+            grep(paste0("^", x, "\\."), names(dots))
+        })
+    dots.dimReduction <- dots[unlist(dots.dr.idx)]
+    # clustering args
+    dots.cl.idx <- sapply(
+        c("Rphenograph", "ClusterX", "DensVM", "FlowSOM"),
+        function(x) {
+            grep(paste0("^", x, "\\."), names(dots))
+        })
+    dots.clustering <- dots[unlist(dots.cl.idx)]
+    # remaining args for standard processing
+    dots <- dots[-c(unlist(dots.dr.idx), unlist(dots.cl.idx))]
+
     set.seed(seed)
     ## get transformed, combined exprs data
     message("Extract expression data...")
-    exprs_data <- cytof_exprsMerge(fcsFiles, comp = ifCompensation, verbose = FALSE, 
-                                   transformMethod = transformMethod, 
-                                   mergeMethod = mergeMethod, fixedNum = fixedNum, ...)
+    exprs_data <- do.call(
+        cytof_exprsMerge,
+        c(list(fcsFiles, comp = ifCompensation, verbose = FALSE, 
+               transformMethod = transformMethod, 
+               mergeMethod = mergeMethod, fixedNum = fixedNum), 
+          dots))
     cat("  ", nrow(exprs_data), " x ", ncol(exprs_data), " data was extracted!\n")
     
     
     ## dimension reduced data, a list
     message("Dimension reduction...")
     alldimReductionMethods <- unique(c(visualizationMethods, dimReductionMethod))
-    allDimReducedList <- lapply(alldimReductionMethods, 
-                                cytof_dimReduction, data = exprs_data, markers = markers, tsneSeed = seed)
+    allDimReducedList <- lapply(
+        alldimReductionMethods, function(method)
+        do.call(
+            cytof_dimReduction, 
+            c(list(data = exprs_data, markers = markers, method = method, tsneSeed = seed), 
+              dots.dimReduction)))
     names(allDimReducedList) <- alldimReductionMethods
     
     
     ## cluster results, a list
     message("Run clustering...")
     set.seed(seed)
-    cluster_res <- lapply(clusterMethods, cytof_cluster, 
-                          ydata = allDimReducedList[[dimReductionMethod]], 
-                          xdata = exprs_data[, markers],
-                          Rphenograph_k = Rphenograph_k,
-                          FlowSOM_k = FlowSOM_k,
-                          flowSeed = seed)
+    cluster_res <- lapply(
+        clusterMethods, function(method)
+        do.call(
+            cytof_cluster, 
+            c(list(ydata = allDimReducedList[[dimReductionMethod]], 
+                   xdata = exprs_data[, markers],
+                   method = method,
+                   Rphenograph_k = Rphenograph_k,
+                   FlowSOM_k = FlowSOM_k,
+                   flowSeed = seed),
+              dots.clustering)))
     names(cluster_res) <- clusterMethods
     
     

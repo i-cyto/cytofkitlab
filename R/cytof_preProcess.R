@@ -128,9 +128,9 @@ cytof_exprsExtract <- function(fcsFile,
     ## load FCS files
     name <- sub(".fcs$", "", basename(fcsFile))
     if (verbose) {
-        fcs <- read.FCS(fcsFile, transformation = FALSE)
+        fcs <- read.FCS(fcsFile, transformation = FALSE, truncate_max_range = FALSE, min.limit = NULL)
     } else {
-        fcs <- suppressWarnings(read.FCS(fcsFile, transformation = FALSE))
+        fcs <- suppressWarnings(read.FCS(fcsFile, transformation = FALSE, truncate_max_range = FALSE, min.limit = NULL))
     }
     
     ## compensation

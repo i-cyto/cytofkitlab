@@ -23,7 +23,8 @@ cytofkit_GUI <- function() {
     cur_dir <- getwd()
     mergeMethods <- c("all", "min", "ceil", "fixed")
     transformMethods <- c("autoLgcl", "cytofAsinh", "logicle", "none")
-    vizMethods <- c("pca", "isomap", "tsne", "NULL")
+    dimReductionMethods <- c("pca", "tsne", "umap")
+    vizMethods <- c("pca", "isomap", "tsne", "umap", "NULL")
     clusterMethods <- c("Rphenograph", "ClusterX", "DensVM", "FlowSOM", "NULL")
     progressionMethods <- c("diffusionmap", "isomap", "NULL")
     fixedLgclParas = c(l_w = 0.5, l_t = 500000, l_m = 4.5, l_a = 0)
@@ -36,10 +37,13 @@ cytofkit_GUI <- function() {
     fixedNum <- tclVar("5000")
     markers <- tclVar("")
     transformMethod <- tclVar("autoLgcl")
+    dimReductionMethod <- tclVar("tsne")
     progressionMethod <- tclVar("NULL")
     Rphenograph_k <- tclVar("30")
     tsne_perp <- tclVar("30")
     tsne_maxIter <- tclVar("1000")
+    umap_n_neighbors <- tclVar("15")
+    umap_min_dist <- tclVar("0.2")
     FlowSOM_k <- tclVar("40")
     seed <- tclVar("42")
     
@@ -178,6 +182,11 @@ cytofkit_GUI <- function() {
                      icon = "info", type = "ok")
     }
     
+    uMk_help <- function() {
+        tkmessageBox(title = "UMAP", message = "n neighbors: Number of nearest neighbours to pass to UMAP.", 
+                     icon = "info", type = "ok")
+    }
+    
     fSk_help <- function() {
         tkmessageBox(title = "FlowSOM K", message = "Number of clusters for meta clustering in FlowSOM.", 
                      icon = "info", type = "ok")
@@ -188,13 +197,18 @@ cytofkit_GUI <- function() {
             icon = "info", type = "ok")
     }
     
+    dimReductionMethod_help <- function() {
+        tkmessageBox(title = "dimreductionMethod", message = "ClusterX and DensVM use dimension reduced data (typically tSNE 2D map) in order to compute clusters. Select UMAP alternatively. Select PCA to get a fast dimension reduction result.", 
+                     icon = "info", type = "ok")
+    }
+    
     cluster_help <- function() {
         tkmessageBox(title = "clusterMethods", message = "The method(s) for clustering, including \"DensVM\", \"ClusterX\", \"Rphenograph\", and \"FlowSOM\". \n\nIf \"NULL\" was selected, no clustering will be performed.", 
             icon = "info", type = "ok")
     }
     
     visualizationMethods_help <- function() {
-        tkmessageBox(title = "visualizationMethods", message = "The method(s) used for visualizing the clustering results, multiple selections are allowed. Including \"pca\", \"isomap\", \"tsne\". \n\nWARNING: \"tsne\" is the default selection, \"isomap\" may take long time.", 
+        tkmessageBox(title = "visualizationMethods", message = "The method(s) used for visualizing the clustering results, multiple selections are allowed. Including \"pca\", \"isomap\", \"tsne\", \"umap\". \n\nWARNING: \"tsne\" is the default selection, \"isomap\" may take long time.", 
             icon = "info", type = "ok")
     }
     
@@ -217,8 +231,9 @@ cytofkit_GUI <- function() {
         tclvalue(fixedNum) = "5000"
         tclvalue(markers) = ""
         tclvalue(transformMethod) = "autoLgcl"
-        tclvalue(clusterSelect[1]) = "0"
-        tclvalue(clusterSelect[2]) = "1"
+        tclvalue(dimReductionMethod) = "tsne"
+        tclvalue(clusterSelect[1]) = "1"
+        tclvalue(clusterSelect[2]) = "0"
         tclvalue(clusterSelect[3]) = "0"
         tclvalue(clusterSelect[4]) = "0"
         tclvalue(vizSelect[1]) <- "0"
@@ -229,6 +244,8 @@ cytofkit_GUI <- function() {
         tclvalue(FlowSOM_k) <- "40"
         tclvalue(tsne_perp) <- "30"
         tclvalue(tsne_maxIter) <- "1000"
+        tclvalue(umap_n_neighbors) <- "15"
+        tclvalue(umap_min_dist) <- "0.2"
         tclvalue(seed) <- "42"
     }
     
@@ -381,7 +398,7 @@ cytofkit_GUI <- function() {
 
     ## tSNE param
     tsnePar_label <- tklabel(tt, text = "tSNE Options :")
-    tsnePar_hBut <- tkbutton(tt, image = image2, command = rPk_help)
+    tsnePar_hBut <- tkbutton(tt, image = image2, command = tSk_help)
     tsne_Param <- tkframe(tt)
     tkpack(tklabel(tsne_Param, text = " "), side = "left")
     tkpack(tklabel(tsne_Param, text = "Perplexity :"), side = "left")
@@ -399,6 +416,20 @@ cytofkit_GUI <- function() {
     tkpack(tklabel(flowsom_Param, text = "k meta clusters :"), side = "left")
     tkpack(tkentry(flowsom_Param, textvariable = FlowSOM_k, width = 4), side = "left")
 
+    ## dimReductionMethod
+    dimReductionMethod_label <- tklabel(tt, text = "DimReduction Method :")
+    dimReductionMethod_hBut <- tkbutton(tt, image = image2,
+                                     command = dimReductionMethod_help)
+    dimReductionMethod_rbuts <- tkframe(tt)
+    tkpack(tklabel(dimReductionMethod_rbuts, text = ""), side = "left")
+    tkpack(tkradiobutton(dimReductionMethod_rbuts, text = dimReductionMethods[1], 
+                         variable = dimReductionMethod, value = dimReductionMethods[1]), side = "left")
+    tkpack(tkradiobutton(dimReductionMethod_rbuts, text = dimReductionMethods[2],
+                         variable = dimReductionMethod, value = dimReductionMethods[2]), side = "left")
+    tkpack(tkradiobutton(dimReductionMethod_rbuts, text = dimReductionMethods[3],
+                         variable = dimReductionMethod, value = dimReductionMethods[3]), side = "left")
+
+    
     ## visualizationMethods
     visualizationMethods_label <- tklabel(tt, text = "Visualization Method(s) :")
     visualizationMethods_hBut <- tkbutton(tt, image = image2,
@@ -416,6 +447,16 @@ cytofkit_GUI <- function() {
     tkpack(tklabel(visualizationMethods_cbuts, text = "                 "), side = "left")
     tkpack(tklabel(visualizationMethods_cbuts, text = "Seed"), side = "left")
     tkpack(tkentry(visualizationMethods_cbuts, textvariable = seed, width = 4), side = "left")
+    ## UMAP param
+    umapPar_label <- tklabel(tt, text = "UMAP Options :")
+    umapPar_hBut <- tkbutton(tt, image = image2, command = uMk_help)
+    umap_Param <- tkframe(tt)
+    tkpack(tklabel(umap_Param, text = " "), side = "left")
+    tkpack(tklabel(umap_Param, text = "n neighbors :"), side = "left")
+    tkpack(tkentry(umap_Param, textvariable = umap_n_neighbors, width = 4), side = "left")
+    tkpack(tklabel(umap_Param, text = "    min dist :"), side = "left")
+    tkpack(tkentry(umap_Param, textvariable = umap_min_dist, width = 4), side = "left")
+
     
     ## progressionMethod
     progressionMethod_label <- tklabel(tt, text = "Cellular Progression :")
@@ -488,13 +529,15 @@ cytofkit_GUI <- function() {
     tkgrid.configure(rphenoPar_label, rphenoPar_hBut, sticky = "e")
     tkgrid.configure(rpheno_Param, sticky = "w")
     
-    tkgrid(tsnePar_label, tsnePar_hBut, tsne_Param, padx = cell_width)
-    tkgrid.configure(tsnePar_label, tsnePar_hBut, sticky = "e")
-    tkgrid.configure(tsne_Param, sticky = "w")
-    
     tkgrid(flowsomPar_label, flowsomPar_hBut, flowsom_Param, padx = cell_width)
     tkgrid.configure(flowsomPar_label, flowsomPar_hBut, sticky = "e")
     tkgrid.configure(flowsom_Param, sticky = "w")
+    
+    tkgrid(dimReductionMethod_label, dimReductionMethod_hBut, dimReductionMethod_rbuts,
+           padx = cell_width)
+    tkgrid.configure(dimReductionMethod_label, sticky = "e")
+    tkgrid.configure(dimReductionMethod_rbuts, sticky = "w")
+    tkgrid.configure(dimReductionMethod_hBut, sticky = "e")
     
     tkgrid(tklabel(tt, text = ""), padx = cell_width)
     
@@ -503,6 +546,14 @@ cytofkit_GUI <- function() {
     tkgrid.configure(visualizationMethods_label, sticky = "e")
     tkgrid.configure(visualizationMethods_cbuts, sticky = "w")
     tkgrid.configure(visualizationMethods_hBut, sticky = "e")
+    
+    tkgrid(tsnePar_label, tsnePar_hBut, tsne_Param, padx = cell_width)
+    tkgrid.configure(tsnePar_label, tsnePar_hBut, sticky = "e")
+    tkgrid.configure(tsne_Param, sticky = "w")
+    
+    tkgrid(umapPar_label, umapPar_hBut, umap_Param, padx = cell_width)
+    tkgrid.configure(umapPar_label, umapPar_hBut, sticky = "e")
+    tkgrid.configure(umap_Param, sticky = "w")
     
     tkgrid(tklabel(tt, text = ""), padx = cell_width)
     
@@ -554,13 +605,15 @@ cytofkit_GUI <- function() {
         inputs[["mergeMethod"]] <- tclvalue(mergeMethod)
         inputs[["fixedNum"]] <- suppressWarnings(as.numeric(tclvalue(fixedNum)))
         inputs[["transformMethod"]] <- tclvalue(transformMethod)
-        inputs[["dimReductionMethod"]] <- "tsne"
+        inputs[["dimReductionMethod"]] <- tclvalue(dimReductionMethod)
         inputs[["clusterMethods"]] <- clusterMethods[clusterCheck]
         inputs[["visualizationMethods"]] <- vizMethods[vizCheck]
         inputs[["progressionMethod"]] <- tclvalue(progressionMethod)
         inputs[["Rphenograph_k"]] <- tclvalue(Rphenograph_k)
         inputs[["tsne_perp"]] <- tclvalue(tsne_perp)
         inputs[["tsne_maxIter"]] <- tclvalue(tsne_maxIter)
+        inputs[["umap_n_neighbors"]] <- tclvalue(umap_n_neighbors)
+        inputs[["umap_min_dist"]] <- tclvalue(umap_min_dist)
         inputs[["FlowSOM_k"]] <- tclvalue(FlowSOM_k)
         inputs[["seed"]] <- tclvalue(seed)
         inputs[["projectName"]] <- tclvalue(projectName)
@@ -593,7 +646,10 @@ cytofkit_GUI <- function() {
                  l_w = as.numeric(inputs[["l_w"]]), 
                  l_t = as.numeric(inputs[["l_t"]]), 
                  l_m = as.numeric(inputs[["l_m"]]), 
-                 l_a = as.numeric(inputs[["l_a"]]))
+                 l_a = as.numeric(inputs[["l_a"]]),
+                 umap.n_neighbors = as.numeric(inputs[["umap_n_neighbors"]]),
+                 umap.min_dist = as.numeric(inputs[["umap_min_dist"]])
+        )
         
         okMessage <- paste0("Analysis done, results are saved under ",
                             inputs[["resultDir"]])
