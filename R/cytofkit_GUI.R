@@ -646,7 +646,10 @@ cytofkit_GUI <- function() {
                  l_w = as.numeric(inputs[["l_w"]]), 
                  l_t = as.numeric(inputs[["l_t"]]), 
                  l_m = as.numeric(inputs[["l_m"]]), 
-                 l_a = as.numeric(inputs[["l_a"]]))
+                 l_a = as.numeric(inputs[["l_a"]]),
+                 umap.n_neighbors = as.numeric(inputs[["umap_n_neighbors"]]),
+                 umap.min_dist = as.numeric(inputs[["umap_min_dist"]])
+        )
         
         okMessage <- paste0("Analysis done, results are saved under ",
                             inputs[["resultDir"]])
