@@ -177,7 +177,7 @@ cytofkit <- function(fcsFiles = getwd(),
     mergeMethod <- match.arg(mergeMethod)
     
     if (!is.null(fixedNum) && !(is.numeric(fixedNum))) 
-        stop("clusterSampleSize must be a numeric number!")
+        stop("fixedNum must be a numeric number!")
     
     transformMethod <- match.arg(transformMethod)
     dimReductionMethod <- match.arg(dimReductionMethod) 
