@@ -232,7 +232,7 @@ cytofkit <- function(fcsFiles = getwd(),
     dots.dimReduction <- dots[unlist(dots.dr.idx)]
     # clustering args
     dots.cl.idx <- sapply(
-        c("Rphenograph", "ClusterX", "DensVM", "FlowSOM"),
+        c("rphenograph", "clusterx", "densvm", "flowsom"),
         function(x) {
             grep(paste0("^", x, "\\."), names(dots))
         })

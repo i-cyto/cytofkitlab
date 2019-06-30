@@ -46,6 +46,7 @@ cytofkit_GUI <- function() {
     umap_n_neighbors <- tclVar("15")
     umap_min_dist <- tclVar("0.2")
     FlowSOM_k <- tclVar("40")
+    FlowSOM_xydim <- tclVar("10")
     seed <- tclVar("42")
     
     # logicle parameters
@@ -248,6 +249,7 @@ cytofkit_GUI <- function() {
         tclvalue(progressionMethod) <- "NULL"
         tclvalue(Rphenograph_k) <- "30"
         tclvalue(FlowSOM_k) <- "40"
+        tclvalue(FlowSOM_xydim) <- "10"
         tclvalue(tsne_perp) <- "30"
         tclvalue(tsne_maxIter) <- "1000"
         tclvalue(umap_n_neighbors) <- "15"
@@ -427,9 +429,11 @@ cytofkit_GUI <- function() {
     flowsomPar_hBut <- tkbutton(tt, image = image2, command = fSk_help)
     flowsom_Param <- tkframe(tt)
     tkpack(tklabel(flowsom_Param, text = " "), side = "left")
-    tkpack(tklabel(flowsom_Param, text = "k meta clusters :"), side = "left")
+    tkpack(tklabel(flowsom_Param, text = "square side :"), side = "left")
+    tkpack(tkentry(flowsom_Param, textvariable = FlowSOM_xydim, width = 4), side = "left")
+    tkpack(tklabel(flowsom_Param, text = "    K meta clusters :"), side = "left")
     tkpack(tkentry(flowsom_Param, textvariable = FlowSOM_k, width = 4), side = "left")
-
+    
     ## dimReductionMethod
     dimReductionMethod_label <- tklabel(tt, text = "DimReduction Method :")
     dimReductionMethod_hBut <- tkbutton(tt, image = image2,
@@ -629,6 +633,7 @@ cytofkit_GUI <- function() {
         inputs[["umap_n_neighbors"]] <- tclvalue(umap_n_neighbors)
         inputs[["umap_min_dist"]] <- tclvalue(umap_min_dist)
         inputs[["FlowSOM_k"]] <- tclvalue(FlowSOM_k)
+        inputs[["FlowSOM_xydim"]] <- tclvalue(FlowSOM_xydim)
         inputs[["seed"]] <- tclvalue(seed)
         inputs[["projectName"]] <- tclvalue(projectName)
         inputs[["resultDir"]] <- tclvalue(resDir)
@@ -668,7 +673,9 @@ cytofkit_GUI <- function() {
                  a_b = as.numeric(inputs[["a_b"]]), 
                  a_c = as.numeric(inputs[["a_c"]]), 
                  umap.n_neighbors = as.numeric(inputs[["umap_n_neighbors"]]),
-                 umap.min_dist = as.numeric(inputs[["umap_min_dist"]])
+                 umap.min_dist = as.numeric(inputs[["umap_min_dist"]]),
+                 flowsom.xdim = as.numeric(inputs[["FlowSOM_xydim"]]),
+                 flowsom.ydim = as.numeric(inputs[["FlowSOM_xydim"]])
         )
         
         okMessage <- paste0("Analysis done, results are saved under ",

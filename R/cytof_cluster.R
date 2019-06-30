@@ -31,12 +31,31 @@ cytof_cluster <- function(ydata = NULL,
                           method = c("Rphenograph", "ClusterX", "DensVM", "FlowSOM", "NULL"),
                           Rphenograph_k = 30,
                           FlowSOM_k = 40,
-                          flowSeed = NULL){
+                          flowSeed = NULL,
+                          ...){
     
     method = match.arg(method)
     if(method == "NULL"){
         return(NULL)
     }
+    
+    # Function to merge default options with dots arguments
+    merge_options <- function(prefix, defaults, dots) {
+        prefix.patt <- paste0("^", prefix, "\\.")
+        prefix.dots <- grep(prefix.patt, names(dots))
+        if (length(prefix.dots)) {
+            # extract specific options and remove prefix
+            new.names <- gsub(prefix.patt, "", names(dots[prefix.dots]))
+            prefix.dots <- dots[prefix.dots]
+            names(prefix.dots) <- new.names
+            # merge arguments and defaults
+            prefix.opts <- c(prefix.dots, defaults)
+            prefix.opts <- prefix.opts[unique(names(prefix.opts))]
+        } else
+            prefix.opts <- defaults
+        list(options = prefix.opts)
+    }
+    
     start_time <- Sys.time()
     switch(method, 
            Rphenograph = {
@@ -54,7 +73,15 @@ cytof_cluster <- function(ydata = NULL,
            FlowSOM = {
                cat("  Running FlowSOM...")
                set.seed(flowSeed)
-               clusters <- FlowSOM_integrate2cytofkit(xdata, FlowSOM_k, flowSeed = flowSeed)
+               # default umap arguments
+               flowsom.opts <- list(
+                   xdata = xdata,
+                   k = FlowSOM_k,
+                   flowSeed = flowSeed
+               )
+               # merge options and execute
+               flowsom.opts <- merge_options("flowsom", flowsom.opts, list(...))
+               clusters <- do.call(FlowSOM_integrate2cytofkit, flowsom.opts[["options"]])
            })
     
     if( length(clusters) != ifelse(is.null(ydata), nrow(xdata), nrow(ydata)) ){

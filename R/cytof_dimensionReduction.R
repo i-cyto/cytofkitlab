@@ -40,6 +40,11 @@ cytof_dimReduction <- function(data,
                                isomapFragmentOK = TRUE,
                                ...) {
     
+    method <- match.arg(method)
+    if(method == "NULL"){
+        return(NULL)
+    }
+    
     data <- as.matrix(data)
     rnames <- row.names(data)
     
@@ -77,11 +82,6 @@ cytof_dimReduction <- function(data,
         } else
             prefix.opts <- defaults
         list(options = prefix.opts)
-    }
-    
-    method <- match.arg(method)
-    if(method == "NULL"){
-        return(NULL)
     }
     
     start_time <- Sys.time()
