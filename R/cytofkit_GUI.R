@@ -22,12 +22,13 @@ cytofkit_GUI <- function() {
     fcsFiles <- ""
     cur_dir <- getwd()
     mergeMethods <- c("all", "min", "ceil", "fixed")
-    transformMethods <- c("autoLgcl", "cytofAsinh", "logicle", "none")
+    transformMethods <- c("autoLgcl", "cytofAsinh", "Fixedlogicle", "asinh", "none")
     dimReductionMethods <- c("pca", "tsne", "umap")
     vizMethods <- c("pca", "isomap", "tsne", "umap", "NULL")
     clusterMethods <- c("Rphenograph", "ClusterX", "DensVM", "FlowSOM", "NULL")
     progressionMethods <- c("diffusionmap", "isomap", "NULL")
     fixedLgclParas = c(l_w = 0.5, l_t = 500000, l_m = 4.5, l_a = 0)
+    fixedAsinhParas = c(a_a = 0, a_b = 1/5, a_c = 0)
     
     rawFCSdir <- tclVar(cur_dir)
     fcsFile <- tclVar("")
@@ -52,6 +53,11 @@ cytofkit_GUI <- function() {
     l_t <- tclVar(fixedLgclParas[2])
     l_m <- tclVar(fixedLgclParas[3])
     l_a <- tclVar(fixedLgclParas[4])
+
+    # asinh parameters
+    a_a <- tclVar(fixedAsinhParas[1])
+    a_b <- tclVar(fixedAsinhParas[2])
+    a_c <- tclVar(fixedAsinhParas[3])
     
     clusterSelect <- c()
     i <- 1
@@ -193,7 +199,7 @@ cytofkit_GUI <- function() {
     }
     
     transformMethod_help <- function() {
-        tkmessageBox(title = "transformationMethod", message = "Data Transformation method, including \"cytofAsinh\"(Customized Asinh transformation for CyTOF data), \"autoLgcl\"(automatic logicle transformation for CyTOF data), \"logicle\"(customize your own parameters for logicle transformation) and \"none\"(if your data is already transformed).", 
+        tkmessageBox(title = "transformationMethod", message = "Data Transformation method, including \"cytofAsinh\"(Customized Asinh transformation for CyTOF data), \"autoLgcl\"(automatic logicle transformation for CyTOF data), \"logicle\"(customize your own parameters for logicle transformation), \"asinh\"(customize your own cofactor for ainh transformation) and \"none\"(if your data is already transformed).", 
             icon = "info", type = "ok")
     }
     
@@ -208,7 +214,7 @@ cytofkit_GUI <- function() {
     }
     
     visualizationMethods_help <- function() {
-        tkmessageBox(title = "visualizationMethods", message = "The method(s) used for visualizing the clustering results, multiple selections are allowed. Including \"pca\", \"isomap\", \"tsne\", \"umap\". \n\nWARNING: \"tsne\" is the default selection, \"isomap\" may take long time.", 
+        tkmessageBox(title = "visualizationMethods", message = "The method(s) used for visualizing the clustering results, multiple selections are allowed. Including \"pca\", \"isomap\", \"tsne\", \"umap\". \n\nWARNING: \"tsne\" is the default selection, \"isomap\" may take long time. PCA is super fast and should be selected if you are mainly interested in the clustering step.", 
             icon = "info", type = "ok")
     }
     
@@ -359,7 +365,7 @@ cytofkit_GUI <- function() {
         variable = transformMethod, value = transformMethods[1]), side = "left")
     tkpack(tkradiobutton(transformMethod_rbuts, text = transformMethods[2],
         variable = transformMethod, value = transformMethods[2]), side = "left")
-    tkpack(tkradiobutton(transformMethod_rbuts, text = "Fixedlogicle",
+    tkpack(tkradiobutton(transformMethod_rbuts, text = transformMethods[3],
         command = function(){ 
             fixedLgclParas <- fixedLogicleParameters_GUI(fixedLgclParas) 
             tclvalue(l_w) <- fixedLgclParas[1] 
@@ -369,7 +375,15 @@ cytofkit_GUI <- function() {
             },
         variable = transformMethod, value = transformMethods[3]), side = "left")
     tkpack(tkradiobutton(transformMethod_rbuts, text = transformMethods[4],
+        command = function(){ 
+            fixedAsinhParas <- fixedAsinhParameters_GUI(fixedAsinhParas) 
+            tclvalue(a_a) <- fixedAsinhParas[1] 
+            tclvalue(a_b) <- fixedAsinhParas[2] 
+            tclvalue(a_c) <- fixedAsinhParas[3] 
+        },
         variable = transformMethod, value = transformMethods[4]), side = "left")
+    tkpack(tkradiobutton(transformMethod_rbuts, text = transformMethods[5],
+        variable = transformMethod, value = transformMethods[5]), side = "left")
     
     ## cluster method
     cluster_label <- tklabel(tt, text = "Cluster Method(s) :")
@@ -444,9 +458,9 @@ cytofkit_GUI <- function() {
                          variable = eval(vizSelect[3])), side = "left")
     tkpack(tkcheckbutton(visualizationMethods_cbuts, text = vizMethods[4],
                          variable = eval(vizSelect[4])), side = "left")
-    tkpack(tklabel(visualizationMethods_cbuts, text = "                 "), side = "left")
-    tkpack(tklabel(visualizationMethods_cbuts, text = "Seed"), side = "left")
-    tkpack(tkentry(visualizationMethods_cbuts, textvariable = seed, width = 4), side = "left")
+    tkpack(tkentry(visualizationMethods_cbuts, textvariable = seed, width = 4), side = "right")
+    tkpack(tklabel(visualizationMethods_cbuts, text = "Seed :"), side = "right")
+    tkpack(tklabel(visualizationMethods_cbuts, text = "                   "), side = "left")
     ## UMAP param
     umapPar_label <- tklabel(tt, text = "UMAP Options :")
     umapPar_hBut <- tkbutton(tt, image = image2, command = uMk_help)
@@ -624,6 +638,9 @@ cytofkit_GUI <- function() {
         inputs[["l_m"]] <- tclvalue(l_m)
         inputs[["l_a"]] <- tclvalue(l_a)
         
+        inputs[["a_a"]] <- tclvalue(a_a)
+        inputs[["a_b"]] <- tclvalue(a_b)
+        inputs[["a_c"]] <- tclvalue(a_c)
         
         # pass the parameters and run the cytofkit function
         cytofkit(fcsFiles = inputs[["fcsFiles"]],
@@ -647,6 +664,9 @@ cytofkit_GUI <- function() {
                  l_t = as.numeric(inputs[["l_t"]]), 
                  l_m = as.numeric(inputs[["l_m"]]), 
                  l_a = as.numeric(inputs[["l_a"]]),
+                 a_a = as.numeric(inputs[["a_a"]]), 
+                 a_b = as.numeric(inputs[["a_b"]]), 
+                 a_c = as.numeric(inputs[["a_c"]]), 
                  umap.n_neighbors = as.numeric(inputs[["umap_n_neighbors"]]),
                  umap.min_dist = as.numeric(inputs[["umap_min_dist"]])
         )
@@ -844,6 +864,55 @@ fixedLogicleParameters_GUI <- function(fixedLgclParas=c(0.5, 500000, 4.5, 0)) {
     
     # return parameters
     paras <- c(tclvalue(l_w), tclvalue(l_t), tclvalue(l_m), tclvalue(l_a))
+    paras <- as.numeric(paras)
+    return(paras)
+} 
+
+#' GUI for gettting parameter for asinh transformation
+#' 
+#' Extract the parameter for fixed asinh transformation
+#' 
+#' @param fixedLgclParas parameters vector containing w, t, m, a
+#' @return Parameters for fixed asinh transformation
+#' @examples 
+#' #fixedAsinhParameters_GUI
+fixedAsinhParameters_GUI <- function(fixedAsinhParas=c(0, 1/5, 0)) {
+    
+    # parameters
+    a_cofactor <- tclVar(round(1/fixedAsinhParas[2], 0))
+    
+    cell_width <- 3
+    box_length <- 10
+    
+    # GUI
+    mm <- tktoplevel(borderwidth = 20)
+    tkwm.title(mm, "Parameters for asinh transformation")
+    
+    x_label <- tklabel(mm, text = "cofactor :")
+    x_entry <- tkentry(mm, textvariable = a_cofactor, width = box_length)
+    
+    OnOK <- function(){
+        tkdestroy(mm)
+    }
+    
+    OK.but <- tkbutton(mm, text = " OK ", command = OnOK)
+    
+    tkgrid(tklabel(mm, text = "Specify your parameters\nfor asinh transformation:"), columnspan=2)
+    
+    tkgrid(tklabel(mm, text = "\n"), padx = cell_width)  # leave blank line
+    
+    tkgrid(x_label, x_entry, padx = cell_width)
+    tkgrid.configure(x_label, sticky = "e")
+    tkgrid.configure(x_entry, sticky = "w")
+    
+    tkgrid(tklabel(mm, text = "\n"), padx = cell_width)  # leave blank line
+    
+    tkgrid(tklabel(mm, text = ""), OK.but, padx = cell_width)
+    tkgrid.configure(OK.but, sticky = "w")
+    tkwait.window(mm)
+    
+    # return parameters
+    paras <- c(fixedAsinhParas[1], 1/as.numeric(tclvalue(a_cofactor)), fixedAsinhParas[3])
     paras <- as.numeric(paras)
     return(paras)
 } 
