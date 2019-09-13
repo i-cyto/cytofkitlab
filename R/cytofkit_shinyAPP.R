@@ -838,8 +838,12 @@ cytofkitShinyAPP <- function(RData = NULL, onServer = FALSE) {
             }else{
               markerNames <- colnames(v$data$expressionData)
               markerNames <- markerNames[order(markerNames)]
-              checkboxGroupInput('c_markerSelect', strong('Select Markers:'),
-                                 markerNames, selected = markerNames, inline = TRUE)
+              # checkboxGroupInput('c_markerSelect', strong('Select Markers:'),
+              #                    markerNames, selected = markerNames, inline = TRUE)
+              initNum <- ifelse(length(markerNames) >= 4, 4, 1)
+              selectizeInput('c_markerSelect', strong('Select Markers:'),
+                             choices = markerNames, selected = markerNames[1:initNum], 
+                             multiple = TRUE, width = "100%")
             }   
           })
           

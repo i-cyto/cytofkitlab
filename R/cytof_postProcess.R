@@ -282,7 +282,7 @@ cytof_clusterPlot <- function(data, xlab, ylab, cluster, sample, title = "cluste
     
     if(missing(clusterColor) || is.null(clusterColor)){
         clusterColor <- rainbow(cluster_num)
-    }else if(length(clusterColor) == 0 || length(clusterColor) != cluster_num){
+    }else if(length(clusterColor) == 0 || length(clusterColor) < cluster_num){
         clusterColor <- rainbow(cluster_num)
     }
     

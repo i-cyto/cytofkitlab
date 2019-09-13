@@ -133,8 +133,9 @@ cytofkit <- function(fcsFiles = getwd(),
                      transformMethod = c("autoLgcl", "cytofAsinh", "logicle", "arcsinh", "none"), 
                      mergeMethod = c("ceil", "all", "min", "fixed"), 
                      fixedNum = 10000, 
+                     normalizeMethod = c("default", "tsne", "umap", "quantile_100_evts"),
                      dimReductionMethod = c("tsne", "pca", "isomap", "umap"), 
-                     clusterMethods = c("Rphenograph", "ClusterX", "DensVM", "FlowSOM", "NULL"), 
+                     clusterMethods = c("Rphenograph", "ClusterX", "DensVM", "FlowSOM", "NULL", "FlowSOMDR"), 
                      visualizationMethods = c("tsne", "pca", "isomap", "umap", "NULL"), 
                      progressionMethod = c("NULL", "diffusionmap", "isomap"),
                      Rphenograph_k = 30,
@@ -180,6 +181,9 @@ cytofkit <- function(fcsFiles = getwd(),
         stop("fixedNum must be a numeric number!")
     
     transformMethod <- match.arg(transformMethod)
+
+    normalizeMethod <- match.arg(normalizeMethod)
+
     dimReductionMethod <- match.arg(dimReductionMethod) 
     
     if(missing(clusterMethods)){
@@ -212,6 +216,8 @@ cytofkit <- function(fcsFiles = getwd(),
     cat(mergeMethod, "\n")
     cat("* Data transformation method: ")
     cat(transformMethod, "\n")
+    cat("* Data normalization method: ")
+    cat(normalizeMethod, "\n")
     cat("* Dimensionality reduction method: ")
     cat(dimReductionMethod, "\n")
     cat("* Data clustering method(s): ")
@@ -232,7 +238,7 @@ cytofkit <- function(fcsFiles = getwd(),
     dots.dimReduction <- dots[unlist(dots.dr.idx)]
     # clustering args
     dots.cl.idx <- sapply(
-        c("rphenograph", "clusterx", "densvm", "flowsom"),
+        c("rphenograph", "clusterx", "densvm", "flowsom", "flowsomdr"),
         function(x) {
             grep(paste0("^", x, "\\."), names(dots))
         })
@@ -251,6 +257,48 @@ cytofkit <- function(fcsFiles = getwd(),
           dots))
     cat("  ", nrow(exprs_data), " x ", ncol(exprs_data), " data was extracted!\n")
     
+    #browser()
+    options.dimReduction <- list()
+    if(normalizeMethod == "default") {
+        # each function does its own
+        # this is the original cytofkit setup
+    } else if (normalizeMethod == "tsne") {
+        # default for Rtsne
+        # mean center each column
+        # scale the whole matrix so the absolute maximum is 1
+        # https://github.com/cran/Rtsne/blob/21f96fe7633c8b775496f3c9a85fd4aba8a6f4ea/src/normalize_input.cpp#L1
+        exprs_data <- Rtsne::normalize_input(exprs_data)
+        # same as UMAP "maxabs" scaling
+    } else if (normalizeMethod == "umap") {
+        # default for published UMAP, ie "colrange"
+        # set column min to zero, column max to 1
+        mmin <- apply(exprs_data, 2, min, na.rm = TRUE)
+        exprs_data <- sweep(exprs_data, 2, mmin, "-")
+        mmax <- apply(exprs_data, 2, max, na.rm = TRUE)
+        mmax <- pmax(mmax, 1)  # avoid zero and small values
+        exprs_data <- sweep(exprs_data, 2, mmax, "/")
+        # exprs_data <- exprs_data - 0.5
+        # reset scaling options
+        options.dimReduction <- list(umap.scale = FALSE,
+                                     tsne.pca = FALSE,
+                                     tsne.normalize = FALSE)
+    } else if (normalizeMethod == "quantile_100_evts") {
+        mmin <- apply(exprs_data, 2, quantile, 
+                      probs = 100/nrow(exprs_data), na.rm = TRUE)
+        exprs_data <- sweep(exprs_data, 2, mmin, "-")
+        mmax <- apply(exprs_data, 2, quantile, 
+                      probs = 1-100/nrow(exprs_data), na.rm = TRUE)
+        mmax <- pmax(mmax, 0.1)
+        exprs_data <- sweep(exprs_data, 2, mmax, "/")
+        # exprs_data <- exprs_data - 0.5
+        # reset scaling options
+        options.dimReduction <- list(umap.scale = FALSE,
+                                     tsne.pca = FALSE,
+                                     tsne.normalize = FALSE)
+    }
+    # Update dots/options
+    for (k in names(options.dimReduction))
+        dots.dimReduction[[k]] <- options.dimReduction[[k]]
     
     ## dimension reduced data, a list
     message("Dimension reduction...")

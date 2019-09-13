@@ -90,10 +90,17 @@ cytof_dimReduction <- function(data,
                cat("  Running t-SNE...with seed", tsneSeed)
                if(is.numeric(tsneSeed))
                    set.seed(tsneSeed) # Set a seed if you want reproducible results
-               tsne_out <- Rtsne(marker_filtered_data, initial_dims = ncol(marker_filtered_data), 
-                                 dims = 2, 
-                                 check_duplicates = FALSE, 
-                                 pca = TRUE, ...)
+               # default tsne arguments
+               tsne.opts <- list(
+                   X = marker_filtered_data, 
+                   initial_dims = ncol(marker_filtered_data), 
+                   dims = 2, 
+                   check_duplicates = FALSE, 
+                   pca = TRUE
+               )
+               # merge options and execute
+               tsne.opts <- merge_options("tsne", tsne.opts, list(...))
+               tsne_out <- do.call(Rtsne::Rtsne, tsne.opts[["options"]])
                mapped <- tsne_out$Y
            },
            pca={

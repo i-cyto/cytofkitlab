@@ -28,7 +28,7 @@
 #' clusters <- cytof_cluster(ydata, xdata, method = "ClusterX")
 cytof_cluster <- function(ydata = NULL, 
                           xdata = NULL, 
-                          method = c("Rphenograph", "ClusterX", "DensVM", "FlowSOM", "NULL"),
+                          method = c("Rphenograph", "ClusterX", "DensVM", "FlowSOM", "NULL", "FlowSOMDR"),
                           Rphenograph_k = 30,
                           FlowSOM_k = 40,
                           flowSeed = NULL,
@@ -57,6 +57,8 @@ cytof_cluster <- function(ydata = NULL,
     }
     
     start_time <- Sys.time()
+    if(is.numeric(flowSeed))
+        set.seed(flowSeed) # Set a seed if you want reproducible results
     switch(method, 
            Rphenograph = {
                cat("  Running PhenoGraph...")
@@ -72,8 +74,8 @@ cytof_cluster <- function(ydata = NULL,
            },
            FlowSOM = {
                cat("  Running FlowSOM...")
-               set.seed(flowSeed)
-               # default umap arguments
+               # set.seed(flowSeed)
+               # default flowsom arguments
                flowsom.opts <- list(
                    xdata = xdata,
                    k = FlowSOM_k,
@@ -82,6 +84,18 @@ cytof_cluster <- function(ydata = NULL,
                # merge options and execute
                flowsom.opts <- merge_options("flowsom", flowsom.opts, list(...))
                clusters <- do.call(FlowSOM_integrate2cytofkit, flowsom.opts[["options"]])
+           },
+           FlowSOMDR = {
+               cat("  Running FlowSOM on DimRed...")
+               # default flowsom arguments
+               flowsomdr.opts <- list(
+                   xdata = ydata,
+                   k = FlowSOM_k,
+                   flowSeed = flowSeed
+               )
+               # merge options and execute
+               flowsomdr.opts <- merge_options("flowsomdr", flowsomdr.opts, list(...))
+               clusters <- do.call(FlowSOM_integrate2cytofkit, flowsomdr.opts[["options"]])
            })
     
     if( length(clusters) != ifelse(is.null(ydata), nrow(xdata), nrow(ydata)) ){

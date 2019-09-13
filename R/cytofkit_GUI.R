@@ -588,8 +588,19 @@ cytofkit_GUI <- function() {
     tkgrid.configure(reset_button, sticky = "e")
     tkgrid.configure(quit_button, sticky = "w")
     
-    tkwait.window(tt)
+    repeat {
+        tkwait.window(tt)
     
+        if (tclvalue(ret_var) != "OK") break
+        if (tclvalue(fcsFile) == "" && tclvalue(rawFCSdir) == "") {
+            tkmessageBox(
+                title = "cytofkit", 
+                message = "Please select a FCS directory or FCS Files.", 
+                icon = "info", type = "ok")
+        } else {
+            break
+        }
+    }
     
     ##-------------------##
     ## Return parameters ##
@@ -599,6 +610,8 @@ cytofkit_GUI <- function() {
         okMessage <- "Analysis is cancelled."
     }else{
         fcsFiles <- strsplit(tclvalue(fcsFile), "}{", fixed = TRUE)[[1]]
+        if (length(fcsFiles) == 0)
+            fcsFiles <- tclvalue(rawFCSdir)
         parameters <- strsplit(tclvalue(markers), "}{", fixed = TRUE)[[1]]
         
         clusterCheck <- c()
@@ -759,11 +772,11 @@ opendir <- function(dir = getwd()){
 #' #getParameters_GUI()
 getParameters_GUI <- function(fcsFile, rawFCSdir) {
     
-    if (missing(fcsFile)) {
+    if (missing(fcsFile) || length(fcsFile) == 1 && fcsFile == "") {
         fcsFile <- list.files(path = rawFCSdir, pattern = ".fcs$", full.names = TRUE)
     }
     
-    fcs <- suppressWarnings(read.FCS(fcsFile[1]))
+    fcs <- suppressWarnings(read.FCS(fcsFile[1], which.lines = 1:99))
     pd <- fcs@parameters@data
     markers <- paste(pd$name, "<", pd$desc, ">", sep = "")
     channels <- paste(pd$name, "<", pd$desc, ">", sep = "")

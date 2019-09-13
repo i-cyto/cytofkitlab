@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // jaccard_coeff
 NumericMatrix jaccard_coeff(NumericMatrix idx);
-RcppExport SEXP cytofkit_jaccard_coeff(SEXP idxSEXP) {
+RcppExport SEXP _cytofkit_jaccard_coeff(SEXP idxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -18,7 +18,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"cytofkit_jaccard_coeff", (DL_FUNC) &cytofkit_jaccard_coeff, 1},
+    {"_cytofkit_jaccard_coeff", (DL_FUNC) &_cytofkit_jaccard_coeff, 1},
     {NULL, NULL, 0}
 };
 
