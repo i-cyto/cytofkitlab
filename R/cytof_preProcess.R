@@ -48,8 +48,10 @@ cytof_exprsMerge <- function(fcsFiles,
       if(!is.null(fixedNum)){
         eventCountTest <- suppressWarnings(any(lapply(exprsL, function(x) if (nrow(x) < fixedNum) {1} else {0})))
         if(eventCountTest == TRUE){
-          warning("One or more FCS files have less events than specified fixedNum; using lowest as fixedNum")
-          fixedNum <- min(rapply(exprsL, nrow))
+          warning("One or more FCS files have less events than specified fixedNum")
+          warning("using replacement and uniform randomization")
+          # warning("using lowest as fixedNum")
+          # fixedNum <- min(rapply(exprsL, nrow))
         }
       }
     }
@@ -69,7 +71,13 @@ cytof_exprsMerge <- function(fcsFiles,
            },
            fixed = {
                mergeFunc <- function(x) {
-                   x[sample(nrow(x), size = fixedNum, replace = ifelse(nrow(x) < fixedNum, TRUE, FALSE)), , drop=FALSE]
+                   replace <- nrow(x) <= fixedNum
+                   if (replace) {
+                       rbind(x, x[sample(nrow(x), size = fixedNum - nrow(x), replace = TRUE), , drop=FALSE] + runif(fixedNum - nrow(x), -0.1, 0.1))
+                   } else {
+                       x[sample(nrow(x), size = fixedNum, replace = FALSE), , drop = FALSE]
+                   }
+                   # x[sample(nrow(x), size = fixedNum, replace = nrow(x) < fixedNum), , drop=FALSE]
                }
                merged <- do.call(rbind, lapply(exprsL, mergeFunc))
            },

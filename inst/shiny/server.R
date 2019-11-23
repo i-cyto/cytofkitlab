@@ -519,9 +519,12 @@ shinyServer(function(input, output, session) {
           for (i in 1:length(clusters)){
               clusteri <- clusters[i]
               ilabel <- input[[paste0('cluster', i)]]
-              if(ilabel == ""){
-                  clusterLabels[clusterLabels==clusteri] <- "Unknown"
-              }else{
+              # if(ilabel == ""){
+              #     clusterLabels[clusterLabels==clusteri] <- "Unknown"
+              # }else{
+              #     clusterLabels[clusterLabels==clusteri] <- ilabel
+              # }
+              if(ilabel != ""){
                   clusterLabels[clusterLabels==clusteri] <- ilabel
               }
           }
