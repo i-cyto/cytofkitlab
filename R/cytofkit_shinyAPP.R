@@ -65,7 +65,7 @@ cytofkitShinyAPP <- function(RData = NULL, onServer = FALSE) {
     }else{
       host <- "127.0.0.1"
     }
-    
+
     #shiny::runApp(system.file('shiny', package = 'cytofkit'))
     options(shiny.launch.browser = TRUE, shiny.port = 4455, shiny.host = host, shiny.maxRequestSize=1024^10)
     shinyApp(

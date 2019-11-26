@@ -25,7 +25,8 @@ scatterPlot <- function(obj, plotMethod, plotFunction, pointSize=1, alpha = 1,
     
     xlab <- colnames(obj$dimReducedRes[[plotMethod]])[1]
     ylab <- colnames(obj$dimReducedRes[[plotMethod]])[2]
-    row.names(data) <- row.names(obj$expressionData)
+    ## problem with duplicated rao names issued by fixed method (replacement)
+    # row.names(data) <- row.names(obj$expressionData)
     
     clusterMethods <- names(obj$clusterRes)
     samples <- sub("_[0-9]*$", "", row.names(obj$expressionData))

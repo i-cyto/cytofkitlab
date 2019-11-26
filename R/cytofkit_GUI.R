@@ -22,7 +22,7 @@ cytofkit_GUI <- function() {
     fcsFiles <- ""
     cur_dir <- getwd()
     mergeMethods <- c("all", "min", "ceil", "fixed")
-    transformMethods <- c("autoLgcl", "cytofAsinh", "Fixedlogicle", "asinh", "none")
+    transformMethods <- c("autoLgcl", "cytofAsinh", "logicle", "arcsinh", "none")
     dimReductionMethods <- c("pca", "tsne", "umap")
     vizMethods <- c("pca", "isomap", "tsne", "umap", "NULL")
     clusterMethods <- c("Rphenograph", "ClusterX", "DensVM", "FlowSOM", "NULL")
