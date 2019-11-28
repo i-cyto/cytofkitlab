@@ -89,7 +89,7 @@ cytof_writeResults <- function(analysis_results,
     ## save analysis results to csv files and pdf figures
     if(saveToFiles){
         ## save exprs
-        ifMultiFCS <- length(unique(sub("_[0-9]*$", "", row.names(exprs)))) > 1
+        ifMultiFCS <- length(unique(sub("_[0-9.]+$", "", row.names(exprs)))) > 1
         write.csv(exprs, paste0(projectName, "_markerFiltered_transformed_merged_expression_data.csv"))
         
         ## save dimReducedData
@@ -157,7 +157,7 @@ cytof_writeResults <- function(analysis_results,
                             xlab <- colnames(datai)[1]
                             ylab <- colnames(datai)[2]
                             dataij <- datai
-                            dataij$sample <- sub("_[0-9]*$", "", row.names(dataij))
+                            dataij$sample <- sub("_[0-9.]+$", "", row.names(dataij))
                             dataij$cluster <- factor(dataj)
                             cluster <- "cluster"
                             sample <- "sample"
@@ -595,7 +595,7 @@ cytof_clusterStat <- function(data, markers, cluster = "cluster", sample,
     
     if(missing(sample)){
         sample <- "sample"
-        data$sample <- sub("_[0-9]*$", "", row.names(data))
+        data$sample <- sub("_[0-9.]+$", "", row.names(data))
     }
     
     if(missing(markers)){
@@ -615,7 +615,7 @@ cytof_clusterStat <- function(data, markers, cluster = "cluster", sample,
                cluster_sample <- data.frame(cluster = data[[cluster]], sample = data[[sample]])
                cluster_sample$value <- 1
                clust_sample_count <- dcast(cluster_sample, cluster ~ sample, fun.aggregate = length)
-               statData <- apply(clust_sample_count[,-1], 2, function(x){round(x/sum(x)*100, 2)})
+               statData <- apply(clust_sample_count[,-1], 2, function(x){round(x/sum(x)*100, 3)})
                statData <- data.frame(statData, cluster = clust_sample_count$cluster, check.names = FALSE)
            })
     
@@ -903,7 +903,7 @@ cytof_addToFCS <- function(data,
       to_add <- cbind(to_add, clusterIDs)
     }
     addColNames <- colnames(to_add)
-    sample <- unique(sub("_[0-9]*$", "", row.names(to_add)))
+    sample <- unique(sub("_[0-9.]+$", "", row.names(to_add)))
     # add argument for old sample names use match()
     
     for (i in 1:length(sample)) {
@@ -922,7 +922,7 @@ cytof_addToFCS <- function(data,
         fcs <- read.FCS(fn, transformation = FALSE)
         pattern <- paste(sample[i], "_", sep = "")
         to_add_i <- as.data.frame(to_add[grep(pattern, row.names(to_add), fixed = TRUE), ])
-        m <- regexpr("_[0-9]*$", row.names(to_add_i))
+        m <- regexpr("_[0-9.]+$", row.names(to_add_i))
         cellNo_i <- as.integer(substring(regmatches(row.names(to_add_i), m), 2))
         # subscript out of bounds
         sub_exprs <- fcs@exprs[cellNo_i, ]

@@ -23,7 +23,7 @@ shinyServer(function(input, output, session) {
         if(!is.null(analysis_results)) {
           v$data <- analysis_results
           v$sampleInfo <- data.frame(cellID = row.names(analysis_results$expressionData),
-                                     cellSample = factor(sub("_[0-9]*$", "", row.names(analysis_results$expressionData))),
+                                     cellSample = factor(sub("_[0-9.]+$", "", row.names(analysis_results$expressionData))),
                                      stringsAsFactors = FALSE)
           p$progressionCluster <- names(analysis_results$clusterRes)[1]
           paste0("Loaded: ", query[["fcspath"]])
@@ -99,7 +99,7 @@ shinyServer(function(input, output, session) {
       # Need modification later
       # currently doesn't update sampleInfo with v$data$sampleInfo
       v$sampleInfo <- data.frame(cellID = row.names(v$data$expressionData),
-                                 cellSample = factor(sub("_[0-9]*$", "", row.names(v$data$expressionData))),
+                                 cellSample = factor(sub("_[0-9.]+$", "", row.names(v$data$expressionData))),
                                  stringsAsFactors = FALSE)
       v$data$sampleInfo <- v$sampleInfo
     }
@@ -124,7 +124,7 @@ shinyServer(function(input, output, session) {
     # Need modification later
     # currently doesn't update sampleInfo with v$data$sampleInfo
     v$sampleInfo <- data.frame(cellID = row.names(v$data$expressionData),
-                               cellSample = factor(sub("_[0-9]*$", "", row.names(v$data$expressionData))),
+                               cellSample = factor(sub("_[0-9.]+$", "", row.names(v$data$expressionData))),
                                stringsAsFactors = FALSE)
     v$data$sampleInfo <- v$sampleInfo
   })
@@ -209,7 +209,7 @@ shinyServer(function(input, output, session) {
     if(is.null(v$data))
       return(NULL)
     paste0("-- ", ifelse(is.null(v$data$progressionRes), "NULL", 
-                         sub("_[0-9]*$", "", colnames(v$data$progressionRes$progressionData)[1])))
+                         sub("_[0-9.]+$", "", colnames(v$data$progressionRes$progressionData)[1])))
   })
   
   output$summaryText5 <- renderText({
@@ -1106,7 +1106,7 @@ shinyServer(function(input, output, session) {
           }
           
           cellID_number <- do.call(base::c, regmatches(v$sampleInfo$cellID,
-                                                       gregexpr("_[0-9]*$", v$sampleInfo$cellID, perl=TRUE)))
+                                                       gregexpr("_[0-9.]+$", v$sampleInfo$cellID, perl=TRUE)))
           
           ## update reactive object v$sampleInfo
           ## newCellID = "sampleGroup" + "_cellID" + "globalID" to avoid duplicates
@@ -1196,7 +1196,7 @@ shinyServer(function(input, output, session) {
               obj <- v$data$progressionRes
               data <- data.frame(obj$progressionData, 
                                  cluster = obj$sampleCluster,
-                                 sample = sub("_[0-9]*$", "", row.names(obj$sampleData)))
+                                 sample = sub("_[0-9.]+$", "", row.names(obj$sampleData)))
               incProgress(1/3)
               data <- data[data$sample %in% input$samples, ,drop=FALSE]
               
@@ -1311,7 +1311,7 @@ shinyServer(function(input, output, session) {
                              v$data$progressionRes$progressionData,
                              check.names = FALSE)
           
-          sampleNames <- sub("_[0-9]*$", "", row.names(v$data$progressionRes$sampleData))
+          sampleNames <- sub("_[0-9.]+$", "", row.names(v$data$progressionRes$sampleData))
           data <- data[sampleNames %in% input$samples, ,drop=FALSE]
           incProgress(1/3)
           if(input$P_combineTrends){
