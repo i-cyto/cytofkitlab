@@ -906,6 +906,8 @@ cytof_addToFCS <- function(data,
     sample <- unique(sub("_[0-9.]+$", "", row.names(to_add)))
     # add argument for old sample names use match()
     
+    sample_key <- factor(gsub("_[0-9]+$", "", row.names(to_add)))
+    cellno_key <- as.integer(gsub(".+_([0-9]+$)", "\\1", row.names(to_add)))
     for (i in 1:length(sample)) {
       # refer to old sample name
       if(!is.null(origSampNames)){
@@ -920,11 +922,8 @@ cytof_addToFCS <- function(data,
     	}
         cat("Save to file:", fn, "\n")
         fcs <- read.FCS(fn, transformation = FALSE)
-        pattern <- paste(sample[i], "_", sep = "")
-        to_add_i <- as.data.frame(to_add[grep(pattern, row.names(to_add), fixed = TRUE), ])
-        m <- regexpr("_[0-9.]+$", row.names(to_add_i))
-        cellNo_i <- as.integer(substring(regmatches(row.names(to_add_i), m), 2))
-        # subscript out of bounds
+        to_add_i <- to_add[sample[i] == sample_key, ]
+        cellNo_i <- cellno_key[sample[i] == sample_key]
         sub_exprs <- fcs@exprs[cellNo_i, ]
         params <- parameters(fcs)
         pd <- pData(params)
