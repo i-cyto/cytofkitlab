@@ -918,9 +918,9 @@ cytof_addToFCS <- function(data,
     	if(!file.exists(fn)){
     	    ## stop the writing if cannot find the file
     	    message(paste("Cannot find raw FCS file:", fn))
-    	    return(NULL)
+    	    next()
     	}
-        cat("Save to file:", fn, "\n")
+        cat("Processing file:", basename(fn), "\n")
         fcs <- read.FCS(fn, transformation = FALSE)
         to_add_i <- to_add[sample[i] == sample_key, ]
         cellNo_i <- cellno_key[sample[i] == sample_key]
@@ -939,8 +939,8 @@ cytof_addToFCS <- function(data,
             channel_number <- nrow(pd) + 1
             channel_id <- paste("$P", channel_number, sep = "")
             channel_name <- addColName
-            minRange <- ceiling(min(to_add_i[[j]]))
-            maxRange <- ceiling(max(to_add_i[[j]]))
+            minRange <- floor(min(to_add_i[,j]))
+            maxRange <- ceiling(max(to_add_i[,j]))
             # channel_range <- maxRange - minRange
             channel_range <- maxRange + 1
             
@@ -953,7 +953,7 @@ cytof_addToFCS <- function(data,
             
             ## update the expression value
             out_col_names <- colnames(sub_exprs)
-            sub_exprs <- cbind(sub_exprs, to_add_i[[j]])
+            sub_exprs <- cbind(sub_exprs, to_add_i[,j])
             colnames(sub_exprs) <- c(out_col_names, addColName)
             
             ## update the description remove '\' in the keywords
@@ -979,7 +979,7 @@ cytof_addToFCS <- function(data,
 
         #### similar to changes made on 23 Jan 2019 by jinmiao chen
         #### to ensure tsne and clustering show on flowjo
-        out_frame <- out_frame[,c((ncol(fcs@exprs)+1):ncol(out_frame@exprs),1:ncol(fcs@exprs))]
+        #out_frame <- out_frame[,c((ncol(fcs@exprs)+1):ncol(out_frame@exprs),1:ncol(fcs@exprs))]
         ####
         
         suppressWarnings(write.FCS(out_frame, paste0(analyzedFCSdir, "/cytofkit_", sample[i], ".fcs")))
