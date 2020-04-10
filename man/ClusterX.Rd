@@ -4,9 +4,18 @@
 \alias{ClusterX}
 \title{Fast clustering by automatic search and find of density peaks}
 \usage{
-ClusterX(data, dimReduction = NULL, outDim = 2, dc, gaussian = TRUE,
-  alpha = 0.001, detectHalos = FALSE, SVMhalos = FALSE,
-  parallel = FALSE, nCore = 4)
+ClusterX(
+  data,
+  dimReduction = NULL,
+  outDim = 2,
+  dc,
+  gaussian = TRUE,
+  alpha = 0.001,
+  detectHalos = FALSE,
+  SVMhalos = FALSE,
+  parallel = FALSE,
+  nCore = 4
+)
 }
 \arguments{
 \item{data}{A data matrix for clustering.}

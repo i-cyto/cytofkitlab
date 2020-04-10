@@ -185,6 +185,7 @@ cytof_dimReduction <- function(data,
                mapped <- umap_out$embedding
            }
     )
+    cat("\n")
     
     ## extract out_dim dimensions, organize output
     if(!is.null(mapped)){
@@ -197,6 +198,6 @@ cytof_dimReduction <- function(data,
         rownames(mapped) <- rnames
     }
     end_time <- Sys.time()
-    cat("  DONE in", round(end_time - start_time, 2), "s\n")
+    cat("  DONE in", round(difftime(end_time, start_time, units = "mins"), 2), "mins\n")
     return(mapped)
 } 

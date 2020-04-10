@@ -118,7 +118,6 @@ NULL
 #' @author Hao Chen, Jinmiao Chen
 #' @references \url{https://github.com/JinmiaoChenLab/cytofkit}
 #' @seealso \code{\link{cytofkit}}, \code{\link{cytofkit_GUI}}, \code{\link{cytofkitShinyAPP}}
-#' @useDynLib cytofkit
 #' @export
 #' @examples
 #' dir <- system.file('extdata',package='cytofkit')
@@ -208,10 +207,10 @@ cytofkit <- function(fcsFiles = getwd(),
     message("Input arguments:")
     cat("* Project Name: ")
     cat(projectName, "\n")
-    cat("* Input FCS files for analysis:\n ")
-    cat(paste0("  -", basename(fcsFiles), "\n"))
-    cat("* Markers:\n ")
-    cat(paste0("  -", markers, "\n"))
+    cat(sprintf("* Input FCS files for analysis (%d):\n", length(fcsFiles)))
+    cat(paste0("    ", basename(fcsFiles), "\n", collapse = ""))
+    cat(sprintf("* Markers (%d):\n", length(markers)))
+    cat(paste0("    ", markers, "\n", collapse = ""))
     cat("* Data merging method: ")
     cat(mergeMethod, "\n")
     cat("* Data transformation method: ")

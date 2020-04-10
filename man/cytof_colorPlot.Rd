@@ -4,10 +4,17 @@
 \alias{cytof_colorPlot}
 \title{Plot the data with color-coded marker values}
 \usage{
-cytof_colorPlot(data, xlab, ylab, zlab, colorPalette = c("bluered",
-  "spectral1", "spectral2", "heat"), limits = c(quantile(data[, zlab], 0.02),
-  quantile(data[, zlab], 0.98)), pointSize = 0.5, alpha = 1,
-  removeOutlier = TRUE)
+cytof_colorPlot(
+  data,
+  xlab,
+  ylab,
+  zlab,
+  colorPalette = c("bluered", "spectral1", "spectral2", "heat"),
+  limits = c(quantile(data[, zlab], 0.02), quantile(data[, zlab], 0.98)),
+  pointSize = 0.5,
+  alpha = 1,
+  removeOutlier = TRUE
+)
 }
 \arguments{
 \item{data}{A dataframe containing the xlab, ylab and zlab.}

@@ -4,17 +4,30 @@
 \alias{cytofkit}
 \title{cytofkit: an integrated mass cytometry data analysis pipeline}
 \usage{
-cytofkit(fcsFiles = getwd(), markers = "parameter.txt",
-  projectName = "cytofkit", ifCompensation = FALSE,
+cytofkit(
+  fcsFiles = getwd(),
+  markers = "parameter.txt",
+  projectName = "cytofkit",
+  ifCompensation = FALSE,
   transformMethod = c("autoLgcl", "cytofAsinh", "logicle", "arcsinh", "none"),
-  mergeMethod = c("ceil", "all", "min", "fixed"), fixedNum = 10000,
-  dimReductionMethod = c("tsne", "pca", "isomap"),
-  clusterMethods = c("Rphenograph", "ClusterX", "DensVM", "FlowSOM", "NULL"),
-  visualizationMethods = c("tsne", "pca", "isomap", "NULL"),
+  mergeMethod = c("ceil", "all", "min", "fixed"),
+  fixedNum = 10000,
+  normalizeMethod = c("default", "tsne", "umap", "quantile_100_evts"),
+  dimReductionMethod = c("tsne", "pca", "isomap", "umap"),
+  clusterMethods = c("Rphenograph", "ClusterX", "DensVM", "FlowSOM", "NULL",
+    "FlowSOMDR"),
+  visualizationMethods = c("tsne", "pca", "isomap", "umap", "NULL"),
   progressionMethod = c("NULL", "diffusionmap", "isomap"),
-  Rphenograph_k = 30, FlowSOM_k = 40, seed = NULL,
-  clusterSampleSize = 500, resultDir = getwd(), saveResults = TRUE,
-  saveObject = TRUE, openShinyAPP = FALSE, ...)
+  Rphenograph_k = 30,
+  FlowSOM_k = 40,
+  seed = NULL,
+  clusterSampleSize = 500,
+  resultDir = getwd(),
+  saveResults = TRUE,
+  saveObject = TRUE,
+  openShinyAPP = FALSE,
+  ...
+)
 }
 \arguments{
 \item{fcsFiles}{It can be either the path where your FCS files are stored or a vector of FCS file names.}

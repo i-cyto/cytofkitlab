@@ -3,12 +3,14 @@
 .Rproj
 .Rhistory
 .RData
-inst/shiny/rsconnect
+inst/doc
 src-i386
 src-x64
+src/*.dll
 **/*.dll
 **/*.o
 *.Rproj
 *.RData
-src/*.dll
 wip*.*
+Meta
+doc

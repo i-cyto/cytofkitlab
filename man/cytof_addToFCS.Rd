@@ -4,9 +4,17 @@
 \alias{cytof_addToFCS}
 \title{Add data to the original FCS files}
 \usage{
-cytof_addToFCS(data, rawFCSdir, origSampNames = NULL, analyzedFCSdir,
-  transformed_cols = c("tsne_1", "tsne_2"), cluster_cols = c("cluster"),
-  clusterIDs = NULL, specifySampleNames = NULL, inLgclTrans = TRUE)
+cytof_addToFCS(
+  data,
+  rawFCSdir,
+  origSampNames = NULL,
+  analyzedFCSdir,
+  transformed_cols = c("tsne_1", "tsne_2"),
+  cluster_cols = c("cluster"),
+  clusterIDs = NULL,
+  specifySampleNames = NULL,
+  inLgclTrans = TRUE
+)
 }
 \arguments{
 \item{data}{The new data matrix to be added in.}

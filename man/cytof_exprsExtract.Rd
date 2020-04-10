@@ -4,10 +4,21 @@
 \alias{cytof_exprsExtract}
 \title{Extract the expression data from a FCS file with preprocessing}
 \usage{
-cytof_exprsExtract(fcsFile, verbose = FALSE, comp = FALSE,
+cytof_exprsExtract(
+  fcsFile,
+  verbose = FALSE,
+  comp = FALSE,
   transformMethod = c("autoLgcl", "cytofAsinh", "logicle", "arcsinh", "none"),
-  scaleTo = NULL, q = 0.05, l_w = 0.1, l_t = 4000, l_m = 4.5,
-  l_a = 0, a_a = 1, a_b = 1, a_c = 0)
+  scaleTo = NULL,
+  q = 0.05,
+  l_w = 0.1,
+  l_t = 4000,
+  l_m = 4.5,
+  l_a = 0,
+  a_a = 1,
+  a_b = 1,
+  a_c = 0
+)
 }
 \arguments{
 \item{fcsFile}{The name of the FCS file.}

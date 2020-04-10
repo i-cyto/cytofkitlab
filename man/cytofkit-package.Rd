@@ -28,26 +28,26 @@ Dimensionality reduction
 Using function \code{\link{cytof_dimReduction}}, t-Distributed Stochastic Neighbor Embedding (\code{tsne}) 
 is suggested for dimensionality reduction with selected markers, although we also provide methods like \code{isomap} and \code{pca}.
 
-Cluster
+Cluster 
 
 Using function \code{\link{cytof_cluster}}, three cluster method are provided, \code{DensVM}, \code{ClusterX} 
 \code{Rphenograph} and \code{FlowSOM}. \code{DensVM}, \code{densityClustX} are performend on the dimension reduced data, while \code{Rphenograph}
 works directed on the high dimensional expression data. Method \code{FlowSOM} is integrated from FlowSOM package 
-(https://bioconductor.org/packages/release/bioc/html/FlowSOM.html).
+(https://bioconductor.org/packages/release/bioc/html/FlowSOM.html). 
 
 Post-processing
 
-- Using function \code{\link{cytof_clusterPlot}} to visualize the cluster results in a scatter plot, in which dots represent cells, colours 
+ - Using function \code{\link{cytof_clusterPlot}} to visualize the cluster results in a scatter plot, in which dots represent cells, colours 
 indicate their assigned clusters and point shapes represent their belonging samples.
 
-- Using function \code{\link{cytof_heatmap}} to generate heat map to visualize the mean expression of every marker in every cluster. 
- This heat maps is useful to interrogate marker expression to identify each cluster's defining markers.
+ - Using function \code{\link{cytof_heatmap}} to generate heat map to visualize the mean expression of every marker in every cluster. 
+ This heat maps is useful to interrogate marker expression to identify each cluster's defining markers. 
 
-- Using function \code{\link{cytof_progressionPlot}} to visualize the expression pattern of selected markers against the estimated 
+ - Using function \code{\link{cytof_progressionPlot}} to visualize the expression pattern of selected markers against the estimated 
  cellular progression order.
  
  - Using function \code{\link{cytof_addToFCS}} to add any dimension reduced data, cluster results, progression data into the original FCS files,
- new FCS files will be saved for easy checking with other softwares like FlowJo.
+ new FCS files will be saved for easy checking with other softwares like FlowJo. 
 
 All the above post processing can be automatically implemented and saved using one function \code{\link{cytof_writeResults}}.
 }

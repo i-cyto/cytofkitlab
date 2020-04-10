@@ -4,10 +4,18 @@
 \alias{cytof_dimReduction}
 \title{Dimension reduction for high dimension data}
 \usage{
-cytof_dimReduction(data, markers = NULL, method = c("tsne", "pca", "isomap",
-  "diffusionmap", "NULL"), distMethod = "euclidean", out_dim = 2,
-  tsneSeed = 42, isomap_k = 5, isomap_ndim = NULL,
-  isomapFragmentOK = TRUE, ...)
+cytof_dimReduction(
+  data,
+  markers = NULL,
+  method = c("tsne", "pca", "isomap", "diffusionmap", "umap", "NULL"),
+  distMethod = "euclidean",
+  out_dim = 2,
+  tsneSeed = 42,
+  isomap_k = 5,
+  isomap_ndim = NULL,
+  isomapFragmentOK = TRUE,
+  ...
+)
 }
 \arguments{
 \item{data}{Input expression data matrix.}

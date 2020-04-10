@@ -4,9 +4,22 @@
 \alias{cytof_clusterPlot}
 \title{Scatter plot of the cluster results}
 \usage{
-cytof_clusterPlot(data, xlab, ylab, cluster, sample, title = "cluster",
-  type = 1, point_size = NULL, addLabel = TRUE, labelSize = 10,
-  sampleLabel = TRUE, labelRepel = FALSE, fixCoord = TRUE, clusterColor)
+cytof_clusterPlot(
+  data,
+  xlab,
+  ylab,
+  cluster,
+  sample,
+  title = "cluster",
+  type = 1,
+  point_size = NULL,
+  addLabel = TRUE,
+  labelSize = 10,
+  sampleLabel = TRUE,
+  labelRepel = FALSE,
+  fixCoord = TRUE,
+  clusterColor
+)
 }
 \arguments{
 \item{data}{The data frame of cluster results, which should contains at least xlab, ylab and cluster.}

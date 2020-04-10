@@ -235,7 +235,8 @@ cytof_writeResults <- function(analysis_results,
 #' @param clusterColor Manually specify the colour of each cluster (mainly for ShinyAPP usage).
 #' @return The ggplot object of the scatter cluster plot.
 #' @export
-#' @importFrom ggplot2 element_text element_rect element_blank element_line element_text annotate
+# @importFrom ggplot2 element_text element_rect element_blank element_line element_text annotate geom_text
+#' @import ggplot2
 #' @examples
 #' x <- c(rnorm(100, mean = 1), rnorm(100, mean = 3), rnorm(100, mean = 9))
 #' y <- c(rnorm(100, mean = 2), rnorm(100, mean = 8), rnorm(100, mean = 5))

@@ -1,34 +1,44 @@
-Package: cytofkit
+Package: cytofkitlab
 Type: Package
-Title: cytofkit: an integrated mass cytometry data analysis pipeline
-Version: 1.11.3
-Date: 2018-01-19
-Author: Jinmiao Chen, Hao Chen, Matthew Myint
+Title: cytofkitlab: a fork of cytofkit, an integrated mass cytometry data analysis pipeline
+Version: 1.11.4
+Date: 2020-04-10
+Authors@R: c(
+  person("Jinmiao ", "Chen", role = "aut", email = "Chen_Jinmiao@immunol.a-star.edu.sg"),
+  person("Hao", "Chen", role = "aut", email = ""),
+  person("Matthew", "Myint", role = "aut", email = "a0124008@u.nus.edu"),
+  person("Samuel", "Granjeaud", role = c("aut", "cre"), email = "samuel.granjeaud@inserm.fr"))
 Description: An integrated mass cytometry data analysis pipeline that enables
     simultaneous illustration of cellular diversity and progression.
 License: Artistic-2.0
-Maintainer: Jinmiao Chen <Chen_Jinmiao@immunol.a-star.edu.sg>, Matthew Myint <a0124008@u.nus.edu>
-URL: https://github.com/JinmiaoChenLab/cytofkit
-BugReports: https://github.com/JinmiaoChenLab/cytofkit/issues
+URL: https://github.com/i-cyto/cytofkitlab
+BugReports: https://github.com/i-cyto/cytofkitlab/issues
 biocViews: FlowCytometry, GUI, CellBiology, Clustering,
     DimensionReduction, BiomedicalInformatics
 Depends:
-    R (>= 3.4.0), ggplot2, plyr
+    R (>= 3.4.0)
 VignetteBuilder: knitr
 Suggests:
     knitr,
     RUnit,
     testthat,
-    BiocGenerics
+    BiocGenerics,
+    cytofast
 Imports:
+    flowCore,
+    Rphenograph,
+    igraph(>= 1.1.2),
+    FlowSOM(>= 1.4.0),
+    Rtsne,
+    RANN(>= 2.5),
+    ggplot2,
+    plyr,
     tcltk,
     grDevices,
     graphics,
     utils,
     stats,
-    Rtsne,
     e1071,
-    flowCore,
     gplots,
     colourpicker,
     VGAM,
@@ -42,10 +52,6 @@ Imports:
     parallel,
     pdist,
     methods,
-    destiny,
-    FlowSOM(>= 1.4.0),
-    igraph(>= 1.1.2),
-    RANN(>= 2.5),
-    Rcpp (>= 0.12.0)
-LinkingTo: Rcpp
-RoxygenNote: 6.0.1
+    destiny
+Encoding: UTF-8
+RoxygenNote: 7.0.2

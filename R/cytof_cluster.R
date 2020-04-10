@@ -17,6 +17,8 @@
 #' @param flowSeed Integer to set a seed for FlowSOM for reproducible results.
 #'
 #' @return a vector of the clusters assigned for each row of the ydata
+#' @importFrom Rphenograph Rphenograph
+#' @importFrom igraph membership
 #' @export
 #' @examples
 #' d<-system.file('extdata', package='cytofkit')
@@ -62,7 +64,8 @@ cytof_cluster <- function(ydata = NULL,
     switch(method, 
            Rphenograph = {
                cat("  Running PhenoGraph...")
-               clusters <- as.numeric(membership(Rphenograph(xdata, k=Rphenograph_k)))
+               RphenographOut <- Rphenograph(xdata, k=Rphenograph_k, verbose = TRUE)
+               clusters <- as.numeric(membership(RphenographOut[[2]]))
            },
            ClusterX = {
                cat("  Running ClusterX...")
@@ -97,6 +100,7 @@ cytof_cluster <- function(ydata = NULL,
                flowsomdr.opts <- merge_options("flowsomdr", flowsomdr.opts, list(...))
                clusters <- do.call(FlowSOM_integrate2cytofkit, flowsomdr.opts[["options"]])
            })
+    cat("\n")
     
     if( length(clusters) != ifelse(is.null(ydata), nrow(xdata), nrow(ydata)) ){
         message("Cluster is not complete, cluster failed, try other cluster method(s)!")
@@ -108,7 +112,7 @@ cytof_cluster <- function(ydata = NULL,
             names(clusters) <- row.names(ydata)
         }
         end_time <- Sys.time()
-        cat("  DONE in", round(end_time - start_time, 2), "s\n")
+        cat("  DONE in", round(difftime(end_time, start_time, units = "mins"), 2), "mins\n")
         return(clusters)
     }
 }
@@ -124,12 +128,12 @@ cytof_cluster <- function(ydata = NULL,
 #' @noRd
 #' @importFrom FlowSOM SOM metaClustering_consensus
 FlowSOM_integrate2cytofkit <- function(xdata, k, flowSeed = NULL, ...){
-    cat("    Building SOM...\n")
+    cat("\n    Building SOM...")
     xdata <- as.matrix(xdata)
     
     ord <- tryCatch({
         map <- SOM(xdata, silent = TRUE, ...)
-        cat("    Meta clustering to", k, "clusters...\n")
+        cat("\n    Meta clustering to", k, "clusters...")
         metaClusters <- suppressMessages(metaClustering_consensus(map$codes, k = k, seed = flowSeed))
         cluster <- metaClusters[map$mapping[,1]]
     }, error=function(cond) {

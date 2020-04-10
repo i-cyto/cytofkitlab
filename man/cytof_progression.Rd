@@ -4,9 +4,16 @@
 \alias{cytof_progression}
 \title{Progression estimation of cytof expression data}
 \usage{
-cytof_progression(data, cluster, method = c("diffusionmap", "isomap", "NULL"),
-  distMethod = "euclidean", out_dim = 2, clusterSampleMethod = c("ceil",
-  "all", "fixed", "min"), clusterSampleSize = 500, sampleSeed = 123)
+cytof_progression(
+  data,
+  cluster,
+  method = c("diffusionmap", "isomap", "NULL"),
+  distMethod = "euclidean",
+  out_dim = 2,
+  clusterSampleMethod = c("ceil", "all", "fixed", "min"),
+  clusterSampleSize = 500,
+  sampleSeed = 123
+)
 }
 \arguments{
 \item{data}{Expression data matrix.}

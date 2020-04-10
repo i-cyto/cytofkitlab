@@ -4,10 +4,16 @@
 \alias{cytof_exprsMerge}
 \title{Merge the expression matrix from multiple FCS files with preprocessing}
 \usage{
-cytof_exprsMerge(fcsFiles, comp = FALSE, transformMethod = c("autoLgcl",
-  "cytofAsinh", "logicle", "arcsinh", "none"), scaleTo = NULL,
-  mergeMethod = c("ceil", "all", "fixed", "min"), fixedNum = 10000,
-  sampleSeed = 123, ...)
+cytof_exprsMerge(
+  fcsFiles,
+  comp = FALSE,
+  transformMethod = c("autoLgcl", "cytofAsinh", "logicle", "arcsinh", "none"),
+  scaleTo = NULL,
+  mergeMethod = c("ceil", "all", "fixed", "min"),
+  fixedNum = 10000,
+  sampleSeed = 123,
+  ...
+)
 }
 \arguments{
 \item{fcsFiles}{A vector of FCS file names.}

@@ -4,9 +4,16 @@
 \alias{cytof_writeResults}
 \title{Save the cytofkit analysis results}
 \usage{
-cytof_writeResults(analysis_results, projectName, saveToRData = TRUE,
-  saveToFCS = TRUE, saveToFiles = TRUE, resultDir, rawFCSdir,
-  inverseLgclTrans = TRUE)
+cytof_writeResults(
+  analysis_results,
+  projectName,
+  saveToRData = TRUE,
+  saveToFCS = TRUE,
+  saveToFiles = TRUE,
+  resultDir,
+  rawFCSdir,
+  inverseLgclTrans = TRUE
+)
 }
 \arguments{
 \item{analysis_results}{Result data from output of \code{\link{cytofkit}}}

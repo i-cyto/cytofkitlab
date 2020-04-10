@@ -4,10 +4,19 @@
 \alias{cytof_progressionPlot}
 \title{Progression plot}
 \usage{
-cytof_progressionPlot(data, markers, clusters, orderCol = "isomap_1",
-  clusterCol = "cluster", reverseOrder = FALSE, addClusterLabel = TRUE,
-  clusterLabelSize = 5, segmentSize = 0.5, min_expr = NULL,
-  trend_formula = "expression ~ sm.ns(Pseudotime, df=3)")
+cytof_progressionPlot(
+  data,
+  markers,
+  clusters,
+  orderCol = "isomap_1",
+  clusterCol = "cluster",
+  reverseOrder = FALSE,
+  addClusterLabel = TRUE,
+  clusterLabelSize = 5,
+  segmentSize = 0.5,
+  min_expr = NULL,
+  trend_formula = "expression ~ sm.ns(Pseudotime, df=3)"
+)
 }
 \arguments{
 \item{data}{The data frame for progression plot.}

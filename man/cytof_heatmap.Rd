@@ -4,11 +4,18 @@
 \alias{cytof_heatmap}
 \title{Heatmap plot of cluster mean value results}
 \usage{
-cytof_heatmap(data, baseName = "Cluster", scaleMethod = "none",
-  dendrogram = c("both", "row", "column", "none"), colPalette = c("bluered",
-  "greenred", "spectral1", "spectral2"), cex_row_label = NULL,
-  cex_col_label = NULL, key.par = list(mgp = c(1.5, 0.5, 0), mar = c(3, 2.5,
-  3.5, 1)), keysize = 1.4, margins = c(5, 5))
+cytof_heatmap(
+  data,
+  baseName = "Cluster",
+  scaleMethod = "none",
+  dendrogram = c("both", "row", "column", "none"),
+  colPalette = c("bluered", "greenred", "spectral1", "spectral2"),
+  cex_row_label = NULL,
+  cex_col_label = NULL,
+  key.par = list(mgp = c(1.5, 0.5, 0), mar = c(3, 2.5, 3.5, 1)),
+  keysize = 1.4,
+  margins = c(5, 5)
+)
 }
 \arguments{
 \item{data}{A matrix with rownames and colnames}
