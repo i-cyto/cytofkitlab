@@ -1,24 +1,24 @@
 ---
 title: "cytofkit: Usage of Shiny APP"
 output:
-  BiocStyle::html_document:
-    toc: true
+  html_document: 
+    number_sections: no
+    toc: yes
+    toc_float: yes
+    collapsed: no
+vignette: >
+  %\VignetteEngine{knitr}
+  %\VignetteIndexEntry{ShinyAPP tutorial}
 ---
-<!--
-%% \VignetteEngine{knitr::rmarkdown}
-%\VignetteIndexEntry{ShinyAPP tutorial}
--->
 
 
 # Launch the Shiny APP
 
 - cytofkit Shiny APP is integrated into the cytofkit pacakge, and can be deployed locally using the following command:
-    ```{r, eval=FALSE}
-    require(cytofkit)
-    cytofkitShinyAPP()
-    ```
-
-- cytofkit Shiny APP is also hosted by shinyapps.io, and can be used through the public link: [cytofkitShinyAPP](https://cytofkit.shinyapps.io/shiny/) 
+```{r, eval=FALSE}
+require(cytofkitlab)
+cytofkitShinyAPP()
+```
 
 # Loading .RData to Shiny APP     
 
@@ -80,5 +80,3 @@ Progression Panel helps estimate the relationship among subsets, it's targeted t
 2. **Marker Expression Profile**: show the expression trend of selected markers along a selected ordering method with a regression line.
 
 3. **Run Diffusion Map**: combine the diffusion map with the clustering results to infer inter-subset relatedness. Firstly, down-sampled the number of cells in each cluster to an equal size, thus reducing the cell subsets density heterogeneities and removing the dominance effect of large populations in the data. Then run diffusion map on the down-sampled dataset. 
-
-

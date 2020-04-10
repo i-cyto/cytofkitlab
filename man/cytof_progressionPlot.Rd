@@ -15,7 +15,7 @@ cytof_progressionPlot(
   clusterLabelSize = 5,
   segmentSize = 0.5,
   min_expr = NULL,
-  trend_formula = "expression ~ sm.ns(Pseudotime, df=3)"
+  trend_formula = "expression ~ VGAM::sm.ns(Pseudotime, df=3)"
 )
 }
 \arguments{

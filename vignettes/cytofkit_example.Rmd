@@ -1,26 +1,33 @@
 ---
 title: "cytofkit: Quick Start"
 output:
-  BiocStyle::html_document:
-    toc: true
+  html_document: 
+    number_sections: no
+    toc: yes
+    toc_float: yes
+    collapsed: no
+vignette: >
+  %\VignetteEngine{knitr}
+  %\VignetteIndexEntry{Quick Start}
 ---
-<!--
-%% \VignetteEngine{knitr::rmarkdown}
-%\VignetteIndexEntry{Quick Start}
--->
 
 
 # Install and Load the Package
 
 
-To install **cytofkit** package, start R and run the following codes on R console:
+To install **cytofkitlab** package, start R and run the following codes on R console:
 
 ```{r, eval=FALSE}
-source("https://bioconductor.org/biocLite.R")
-biocLite("cytofkit")
+# install devtools if not already done
+if (!requireNamespace("devtools", quietly = TRUE)) install.packages("devtools")
+# install cytofkitlab
+devtools::install_github("i-cyto/cytofkitlab")
+# install Rphenograph if not already installed
+if (!requireNamespace("Rphenograph", quietly = TRUE))
+  devtools::install_github("i-cyto/Rphenograph")
 ```
 
-`Notes`: **cytofkit** GUI is dependent on XQuartz windowing system (X Windows) on Mac (OS X > 10.7). Install XQuartz from http://xquartz.macosforge.org.
+`Notes`: **cytofkitlab** GUI is dependent on XQuartz windowing system (X Windows) on Mac (OS X > 10.7). Install XQuartz from http://xquartz.macosforge.org.
 
 * Download the disk image (dmg) file for [XQuartz](https://dl.bintray.com/xquartz/downloads/XQuartz-2.7.9.dmg).
 * Double-clicking on the file to start the installation, you can do it safely by clicking through all the defaults.
@@ -29,13 +36,13 @@ biocLite("cytofkit")
 Load the Package:
 
 ```{r, message=FALSE}
-library("cytofkit") 
+library("cytofkitlab") 
 ```
 
 Read the package description:
 
 ```{r, eval=FALSE}
-?"cytofkit-package"
+?"cytofkitlab-package"
 ```
 
 
@@ -53,7 +60,7 @@ cytofkit_GUI()
 
 The interface will appear like below, you can click the information button **!** to check the explanation for each entry and customize your own analysis.
 
-![cytofkit GUI](cytofkit_GUI.png)
+![cytofkitlab GUI](cytofkitlab_GUI.png)
 
 Start your analysis as simply as following:   
 
@@ -71,11 +78,11 @@ Depends on the size of your data, it will take some time to run the analysis. On
 
 ## Run with the Core Function 
 
-**Cytofkit** provides a core function `cytofkit()` to drive the analysis pipeline of mass cytometry data. Users only need to define several key parameters to start their analysis automatically. One simple example of running cytofkit using the core function is like this:
+**cytofkit** provides a core function `cytofkit()` to drive the analysis pipeline of mass cytometry data. Users only need to define several key parameters to start their analysis automatically. One simple example of running cytofkit using the core function is like this:
 
 ```{r, eval=FALSE}
 set.seed(100)
-dir <- system.file('extdata',package='cytofkit')
+dir <- system.file('extdata',package='cytofkitlab')
 file <- list.files(dir ,pattern='.fcs$', full=TRUE)
 parameters <- list.files(dir, pattern='.txt$', full=TRUE)
 res <- cytofkit(fcsFiles = file, 
@@ -99,13 +106,13 @@ You can customize the parameters for your own need, run `?cytofkit` to get infor
 
 ## Run with Commands (Step-by-Step) 
 
-You can make use of the functions exported from cytofkit to make your analysis more flexible and fit your own need. Here we use a sample data for demo:
+You can make use of the functions exported from **cytofkit** to make your analysis more flexible and fit your own need. Here we use a sample data for demo:
 
 ### Pre-processing
 
 ```{r}
 ## Loading the FCS data:  
-dir <- system.file('extdata',package='cytofkit')
+dir <- system.file('extdata',package='cytofkitlab')
 file <- list.files(dir ,pattern='.fcs$', full=TRUE)
 paraFile <- list.files(dir, pattern='.txt$', full=TRUE)
 parameters <- as.character(read.table(paraFile, header = TRUE)[,1])
@@ -264,7 +271,7 @@ cytof_addToFCS(data_1k_all, rawFCSdir=dir, analyzedFCSdir="analysed_FCS",
 
 In addition, expression values for cells in a specified cluster can be extracted using `cytof_clusterMtrx()`
 ```{r}
-## See documentation, this function uses the output of main cytofkit cuntion as its input
+## See documentation, this function uses the output of main cytofkit function as its input
 ?cytof_clusterMtrx
 ```
 

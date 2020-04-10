@@ -1,20 +1,24 @@
 #' Save the cytofkit analysis results
-#' 
-#' Save analysis results from cytofkit main function to RData, csv files and PDF files and
-#' add them to a new copy of FCS files.
+#'
+#' Save analysis results from cytofkit main function to RData, csv files and PDF files and add them
+#' to a new copy of FCS files.
 #'
 #' @param analysis_results Result data from output of \code{\link{cytofkit}}
 #' @param projectName A prefix that will be added to the names of result files.
-#' @param saveToRData Boolean value determines if results object is saved into RData file, for loading back to R and to shiny APP.
-#' @param saveToFCS Boolean value determines if results are saved back to FCS files, new FCS files will be generated under folder XXX_analyzedFCS.
-#' @param saveToFiles Boolean value determines if results are parsed and automatically saved to csv files and pdf figures.
+#' @param saveToRData Boolean value determines if results object is saved into RData file, for
+#'   loading back to R and to shiny APP.
+#' @param saveToFCS Boolean value determines if results are saved back to FCS files, new FCS files
+#'   will be generated under folder XXX_analyzedFCS.
+#' @param saveToFiles Boolean value determines if results are parsed and automatically saved to csv
+#'   files and pdf figures.
 #' @param resultDir The directory where result files will be generated.
 #' @param rawFCSdir The directory that contains fcs files to be analysed.
-#' @param inverseLgclTrans If \verb{TRUE}, inverse logicle transform the cluster cor1 and cor2 channels.
+#' @param inverseLgclTrans If \verb{TRUE}, inverse logicle transform the cluster cor1 and cor2
+#'   channels.
 #' @return Save all results in the \code{resultDir}
-#' @importFrom ggplot2 ggplot ggsave aes_string facet_wrap geom_point geom_rug theme_bw theme xlab ylab ggtitle coord_fixed guides guide_legend scale_shape_manual scale_colour_manual
+#' @importFrom ggplot2 ggplot ggsave aes_string facet_wrap geom_point geom_rug theme_bw theme xlab
+#'   ylab ggtitle coord_fixed guides guide_legend scale_shape_manual scale_colour_manual aes geom_line
 #' @importFrom reshape2 dcast
-#' @importFrom ggplot2 ggplot ggsave aes_string geom_line geom_point xlab ylab ggtitle theme_bw
 #' @importFrom flowCore write.FCS flowFrame inverseLogicleTransform
 #' @importFrom grDevices dev.off pdf rainbow
 #' @importFrom graphics par
@@ -714,7 +718,7 @@ cytof_progressionPlot <- function(data, markers, clusters,
                                   clusterLabelSize = 5,
                                   segmentSize = 0.5,
                                   min_expr = NULL, 
-                                  trend_formula="expression ~ sm.ns(Pseudotime, df=3)"){
+                                  trend_formula="expression ~ VGAM::sm.ns(Pseudotime, df=3)"){
     
     if(!is.data.frame(data)) data <- data.frame(data, check.names = FALSE)
     if(!all(markers %in% colnames(data))) stop("Unmatching markers found!")
