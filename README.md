@@ -1,11 +1,15 @@
-cytofkit: an integrated mass cytometry data analysis pipeline
+cytofkitlab: a fork of cytofkit, an integrated mass cytometry data analysis pipeline
 ============
 
-**NOTE**: <u>This is the development version of cytofkit package</u>
+**NOTE**: If you are looking for **cytofkit**, go to http://jinmiaochenlab.github.io/cytofkit/
 
-### cytofkit
+### cytofkitlab
 
-This package is designed to facilitate the analysis workflow of mass cytometry data with automatic subset identification and mapping of cellular progression. Both command line and a GUI client are provided for executing the workflow easily.
+cytofkit**lab** is a fork of cytofkit, the famous package designed to facilitate the analysis workflow of mass cytometry data with automatic subset identification and mapping of cellular progression.
+
+cytofkit**lab** will be forever in development. Please use the Issues section to improve it.
+
+cytofkit**lab** does not include the Phenograph clustering anymore. Phenograph is available in as a **required** external package [Rphenograph](http://github.com/i-cyto/Rphenograph). You will have to install Rphenograph only once. Because cytofkit**lab** does not require a compiler anymore, it is easier and quicker to update and deploy it.
 
 ### Installation
 
@@ -33,36 +37,32 @@ For Mac OS X 10.8 or later, you need to install XQuartz to support the GUI:
 * After the installer runs, you'll have to **restart your mac computer**.
 
 
-#### 2. Install cytofkit package
+#### 2. Install cytofkitlab package
 
-The offical and stable version, please refer to 
-
-- [Bioconductor](https://www.bioconductor.org/packages/cytofkit/)
-- [GitHub](https://github.com/JinmiaoChenLab/cytofkit)
-
-Install the stable version from Bioconductor, use:
+Install this development version:
 
 ``` r
-## try http:// if https:// URLs are not supported
-source("https://bioconductor.org/biocLite.R")
-biocLite("cytofkit")
+# install devtools if not already done
+if (!requireNamespace("devtools", quietly = TRUE)) install.packages("devtools")
+# install cytofkitlab
+devtools::install_github("i-cyto/cytofkitlab")
 ```
 
-Install this development version, use:
+The Phenograph algorithm must be installed as a separated package Rphenograph:
 
 ``` r
-if(!require(devtools)){
-  install.packages("devtools") # If not already installed
-}
-devtools::install_github("JinmiaoChenLab/cytofkit")
+# install devtools if not already done
+if (!requireNamespace("devtools", quietly = TRUE)) install.packages("devtools")
+# install cytofkitlab
+devtools::install_github("i-cyto/Rphenograph")
 ```
 
 ### Usage
 
-After successfully installing the cytofkit package, run the following codes to open the cytofkit GUI:
+Same as cytofkit. After successfully installing the package, run the following codes to open the GUI:
 
 ``` r
-library("cytofkit")
+library(cytofkitlab)
 cytofkit_GUI()
 ```
 
@@ -74,10 +74,6 @@ cytofkitShinyAPP()
 
 <u>Check the following vignettes for more details:</u>
 
-- [cytofkit: Analysis Pipeline](https://www.bioconductor.org/packages/release/bioc/vignettes/cytofkit/inst/doc/cytofkit_workflow.html)    
-- [cytofkit: Quick Start](https://www.bioconductor.org/packages/release/bioc/vignettes/cytofkit/inst/doc/cytofkit_example.html)   
-- [cytofkit: ShinyAPP Tutorial](https://www.bioconductor.org/packages/release/bioc/vignettes/cytofkit/inst/doc/cytofkit_shinyAPP.html)    
-
-
-
-
+- [Analysis Pipeline](http://bioconductor.org/packages/3.6/bioc/vignettes/cytofkit/inst/doc/cytofkit_workflow.html)    
+- [Quick Start](http://bioconductor.org/packages/3.6/bioc/vignettes/cytofkit/inst/doc/cytofkit_example.html)   
+- [ShinyAPP Tutorial](http://bioconductor.org/packages/3.6/bioc/vignettes/cytofkit/inst/doc/cytofkit_shinyAPP.html)    
