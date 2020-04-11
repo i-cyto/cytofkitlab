@@ -27,7 +27,7 @@ Cytofkit}
 }
 \value{
 The function returns an object of class
-  \code{\link[cytofast]{cfList}}.
+  \code{\link[cytofast]{cfList-class}}.
 }
 \description{
 This function reads and combines .FCS files created specifically

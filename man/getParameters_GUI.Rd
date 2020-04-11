@@ -15,7 +15,7 @@ getParameters_GUI(fcsFile, rawFCSdir)
 List of markers for ddimension reduction and clustering
 }
 \description{
-Extract the markers from the fcsfiles
+Extract the markers from the specified FCS files or the first FCS of the given directory
 }
 \examples{
 #getParameters_GUI()
