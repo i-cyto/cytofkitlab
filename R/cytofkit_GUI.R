@@ -95,7 +95,7 @@ cytofkit_GUI <- function() {
     
     reset_rawFCS_dir <- function() {
         rawFCS_dir <- ""
-        rawFCS_dir <- tclvalue(tkchooseDirectory(title = "Choose your rawFCS direcetory ..."))
+        rawFCS_dir <- tclvalue(tkchooseDirectory(title = "Choose your rawFCS directory ..."))
         if (rawFCS_dir != "") {
             tclvalue(rawFCSdir) <- rawFCS_dir
             tclvalue(resDir) <- rawFCS_dir
@@ -283,7 +283,9 @@ cytofkit_GUI <- function() {
     
     ## head line
     tt <- tktoplevel(borderwidth = 20)
+    tcl("wm", "attributes", tt, topmost=TRUE)  # put it in front
     tkwm.title(tt, "cytofkit: an Integrated Analysis Pipeline for Mass Cytometry Data")
+    tkraise(ss)
     
     if(.Platform$OS.type == "windows"){
         box_length <- 63
@@ -719,8 +721,10 @@ launchShinyAPP_GUI <- function(message="cytofkit", dir = getwd(), obj = NULL){
     }else{
         ifAPP <- tclVar("n")
         ss <- tktoplevel(borderwidth = 10)
+        tcl("wm", "attributes", ss, topmost=TRUE)  # put it in front
         tkwm.title(ss, "cytofkit: Analysis Done")
-        
+        tkraise(ss)
+
         onYes <- function() {
             tclvalue(ifAPP) <- "y"
             tkdestroy(ss)
@@ -763,13 +767,15 @@ opendir <- function(dir = getwd()){
 
 #' GUI for marker selection 
 #' 
-#' Extract the markers from the fcsfiles
+#' Extract the markers from the specified FCS files or the first FCS of the given directory
 #' 
 #' @param fcsFile The name of the FCS file
 #' @param rawFCSdir The path of the FCS file
 #' @return List of markers for ddimension reduction and clustering
 #' @examples 
 #' #getParameters_GUI()
+#' @import tcltk
+#' @export
 getParameters_GUI <- function(fcsFile, rawFCSdir) {
     
     if (missing(fcsFile) || length(fcsFile) == 1 && fcsFile == "") {
@@ -814,6 +820,58 @@ getParameters_GUI <- function(fcsFile, rawFCSdir) {
     return(paras)
 } 
 
+#' GUI for marker selection
+#'
+#' Extract the markers from the fcsfiles, write the selection into a file and returns the directory
+#' of FCS files
+#'
+#' @param markerFile The name of the FCS file
+#' @param rawFCSdir The path of the FCS file
+#' @param fcsFile The name of the FCS file
+#' @return List of markers for ddimension reduction and clustering
+#' @examples
+#' #storeMarkers_GUI()
+#' @import tcltk
+#' @export
+storeMarkers_GUI <- function(markerFile, rawFCSdir, fcsFile) {
+    # default marker file name
+    if (missing(markerFile) || length(markerFile) == 1 && markerFile == "") {
+        markerFile <- "cytofkit_markers.txt"
+    }
+    # use given FCS dir or ask for one
+    if (missing(rawFCSdir)) {
+        if (missing(fcsFile)) {
+            # Open a Tk window and open a dir chooser
+            mm <- tktoplevel(borderwidth = 10)
+            tcl("wm", "attributes", mm, topmost=TRUE)  # put it in front
+            tkwm.title(mm, "cytofkit: Choose dir")
+            tkraise(mm)
+            rawFCSdir <- tclvalue(tkchooseDirectory(
+                initialdir=getwd(),
+                title = "Choose the directory of input FCS files..."))
+            tkdestroy(mm)
+            if (rawFCSdir == "")
+                stop("No input directory!")
+            fcsFile <- ""
+        } else if (file.exists(fcsFile)) {
+            rawFCSdir <- dirname(fcsFile)
+        } else {
+            stop("FCS file \"", fcsFile ,"\" is not found!")
+        }
+    }
+    # call the GUI to select markers
+    markers <- cytofkitlab:::getParameters_GUI(fcsFile, rawFCSdir)
+    if (length(markers) == 0) {
+        warning("No marker selected!")
+    } else {
+        # write the list as a table to disk
+        write.table(data.frame(markers), file.path(rawFCSdir, markerFile),
+                    row.names = FALSE, quote = FALSE)
+    }
+    # return path
+    message("Path of FCS files: ", rawFCSdir)
+    return(rawFCSdir)
+}
 
 #' GUI for gettting parameter for logicle transformation
 #' 
