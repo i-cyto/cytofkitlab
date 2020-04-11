@@ -12,5 +12,6 @@ src/*.dll
 *.Rproj
 *.RData
 wip*.*
+wip/*
 Meta
 doc
