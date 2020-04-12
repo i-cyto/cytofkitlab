@@ -285,7 +285,8 @@ cytofkit_GUI <- function() {
     tt <- tktoplevel(borderwidth = 20)
     tcl("wm", "attributes", tt, topmost=TRUE)  # put it in front
     tkwm.title(tt, "cytofkit: an Integrated Analysis Pipeline for Mass Cytometry Data")
-    tkraise(ss)
+    tkraise(tt)
+    tcl("wm", "attributes", tt, topmost=FALSE)  # put it in front
     
     if(.Platform$OS.type == "windows"){
         box_length <- 63
@@ -296,7 +297,7 @@ cytofkit_GUI <- function() {
     bt_width <- 8
     #hb_width <- 8
     
-    imgfile <- system.file("extdata", "help.png", package = "cytofkit")
+    imgfile <- system.file("extdata", "help.png", package = "cytofkitlab")
     image1 <- tclVar()
     tkimage.create("photo", image1, file = imgfile)
     image2 <- tclVar()
@@ -780,6 +781,10 @@ getParameters_GUI <- function(fcsFile, rawFCSdir) {
     
     if (missing(fcsFile) || length(fcsFile) == 1 && fcsFile == "") {
         fcsFile <- list.files(path = rawFCSdir, pattern = ".fcs$", full.names = TRUE)
+        if (length(fcsFile) == 0) {
+            warning("No FCS file in the given directory \"", rawFCSdir,"\".")
+            return(NULL)
+        }
     }
     
     fcs <- suppressWarnings(read.FCS(fcsFile[1], which.lines = 1:99))

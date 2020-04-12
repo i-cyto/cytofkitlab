@@ -1,7 +1,10 @@
 cytofkitlab: a fork of cytofkit, an integrated mass cytometry data analysis pipeline
 ============
 
-**NOTE**: If you are looking for **cytofkit**, go to http://jinmiaochenlab.github.io/cytofkit/
+**NOTE**: If you are looking for the **original cytofkit**, go to http://jinmiaochenlab.github.io/cytofkit/.
+
+**NOTE**: If you are looking for the NEWS about cytofkit**lab**, it's [here](NEWS.md).
+
 
 ### cytofkitlab
 

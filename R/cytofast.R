@@ -30,9 +30,7 @@
 #'
 #'   NB: No compensation nor transformation is applied to the data.
 #'
-#' @keywords read, data, FCS, cytofkit
-#'
-#' @import Rdpack
+#' @keywords read, data, FCS, cytofast
 #'
 #' @examples
 #' dirFCS <- system.file("extdata", package="cytofast")
