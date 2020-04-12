@@ -54,6 +54,6 @@ cfData <- readCytofkitFCS(dir = dirFCS, colNames = "description")
 
 }
 \keyword{FCS,}
-\keyword{cytofkit}
+\keyword{cytofast}
 \keyword{data,}
 \keyword{read,}
