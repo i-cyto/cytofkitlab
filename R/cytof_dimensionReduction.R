@@ -18,8 +18,9 @@
 #' @importFrom vegan vegdist spantree isomap
 #' @importFrom Rtsne Rtsne
 #' @importFrom destiny DiffusionMap
-#' @importFrom utils compareVersion packageVersion
+# @importFrom utils compareVersion packageVersion
 #' @import stats
+#' @importFrom uwot umap
 #' @export
 #' @examples
 #' data(iris)
@@ -109,12 +110,12 @@ cytof_dimReduction <- function(data,
            },
            diffusionmap={
                cat("  Running Diffusion Map...\n")
-               versiontest <- compareVersion(as.character(packageVersion("igraph")), "1.1.0")
-               if(versiontest == 0 || versiontest == 1){
-                 message("igraph up to date!")
-               }else{
-                 stop("igraph not at least version 1.1.0! Stopping...")
-               }
+               # versiontest <- compareVersion(as.character(packageVersion("igraph")), "1.1.0")
+               # if(versiontest == 0 || versiontest == 1){
+               #   message("igraph up to date!")
+               # }else{
+               #   stop("igraph not at least version 1.1.0! Stopping...")
+               # }
                ord <- tryCatch({
                    DiffusionMap(marker_filtered_data, distance = distMethod, ...)
                    }, error=function(cond) {
