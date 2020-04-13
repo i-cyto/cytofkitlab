@@ -42,15 +42,6 @@ For Mac OS X 10.8 or later, you need to install XQuartz to support the GUI:
 
 #### 2. Install cytofkitlab package
 
-Install this development version:
-
-``` r
-# install devtools if not already done
-if (!requireNamespace("devtools", quietly = TRUE)) install.packages("devtools")
-# install cytofkitlab
-devtools::install_github("i-cyto/cytofkitlab")
-```
-
 The Phenograph algorithm must be installed as a separated package Rphenograph:
 
 ``` r
@@ -59,6 +50,15 @@ if (!requireNamespace("devtools", quietly = TRUE)) install.packages("devtools")
 # install Rphenograph if not already installed
 if (!requireNamespace("Rphenograph", quietly = TRUE))
   devtools::install_github("i-cyto/Rphenograph")
+```
+
+Install cytofkitlab development version:
+
+``` r
+# install devtools if not already done
+if (!requireNamespace("devtools", quietly = TRUE)) install.packages("devtools")
+# install cytofkitlab
+devtools::install_github("i-cyto/cytofkitlab")
 ```
 
 ### Usage

@@ -18,7 +18,7 @@ Opens shinyApp session for data visualisation
 Take the the RData object file saved by cytofkit as input, automatically load the data and allow exploration of the analysis results with interactive control
 }
 \examples{
-d <- system.file('extdata', package = 'cytofkit')
+d <- system.file('extdata',package='cytofkitlab')
 Rdata <- list.files(d, pattern = '.RData$', full.names = TRUE)
 #only for interactive sessions, remove hash to run
 #cytofkitShinyAPP(Rdata)

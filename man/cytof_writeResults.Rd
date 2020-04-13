@@ -44,7 +44,7 @@ Save analysis results from cytofkit main function to RData, csv files and PDF fi
 to a new copy of FCS files.
 }
 \examples{
-d <- system.file('extdata',package='cytofkit')
+d <- system.file('extdata',package='cytofkitlab')
 f <- list.files(d, pattern='.fcs$', full=TRUE)
 p <- list.files(d, pattern='.txt$', full=TRUE)
 #tr <- cytofkit(fcsFile=f,markers=p,projectName='t',saveResults=FALSE)

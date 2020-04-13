@@ -20,11 +20,11 @@ To install **cytofkitlab** package, start R and run the following codes on R con
 ```{r, eval=FALSE}
 # install devtools if not already done
 if (!requireNamespace("devtools", quietly = TRUE)) install.packages("devtools")
-# install cytofkitlab
-devtools::install_github("i-cyto/cytofkitlab")
 # install Rphenograph if not already installed
 if (!requireNamespace("Rphenograph", quietly = TRUE))
   devtools::install_github("i-cyto/Rphenograph")
+# install cytofkitlab
+devtools::install_github("i-cyto/cytofkitlab")
 ```
 
 `Notes`: **cytofkitlab** GUI is dependent on XQuartz windowing system (X Windows) on Mac (OS X > 10.7). Install XQuartz from http://xquartz.macosforge.org.

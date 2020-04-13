@@ -14,13 +14,13 @@
 #' @author Hao Chen
 #' @export
 #' @examples 
-#' d <- system.file('extdata', package = 'cytofkit')
+#' d <- system.file('extdata',package='cytofkitlab')
 #' Rdata <- list.files(d, pattern = '.RData$', full.names = TRUE)
 #' #only for interactive sessions, remove hash to run
 #' #cytofkitShinyAPP(Rdata)
 cytofkitShinyAPP <- function(RData = NULL, onServer = FALSE) {
     
-    source(system.file('shiny', "global.R", package = 'cytofkit'))
+    source(system.file('shiny', "global.R", package = "cytofkitlab"))
   
     analysis_results <- NULL
     sampleInformation <- NULL
@@ -31,7 +31,7 @@ cytofkitShinyAPP <- function(RData = NULL, onServer = FALSE) {
     if(!missing(RData)){
         if(class(RData) == "character"){
             if(file.exists(RData)){
-              if(tools::file_ext(RData) == "RData"){
+              if(grepl("\\.RData$", RData)){
                 load(RData)
                 direct_analysis_results <- analysis_results
                 message(".RData loaded!")
@@ -970,7 +970,7 @@ cytofkitShinyAPP <- function(RData = NULL, onServer = FALSE) {
               
               if (i <= length(clusterLabel)){
                 x <- clusterLabel[i]
-                colourInput(inputId=paste0('cluster_', i, '_col'), 
+                colourPicker::colourInput(inputId=paste0('cluster_', i, '_col'), 
                             label=paste0('Cluster ', x," Colour :"), 
                             value = clusterColor[i], showColour = "both", 
                             palette = "square")
@@ -1064,9 +1064,12 @@ cytofkitShinyAPP <- function(RData = NULL, onServer = FALSE) {
               for (i in 1:length(clusters)){
                 clusteri <- clusters[i]
                 ilabel <- input[[paste0('cluster', i)]]
-                if(ilabel == ""){
-                  clusterLabels[clusterLabels==clusteri] <- "Unknown"
-                }else{
+              # if(ilabel == ""){
+              #     clusterLabels[clusterLabels==clusteri] <- "Unknown"
+              # }else{
+              #     clusterLabels[clusterLabels==clusteri] <- ilabel
+              # }
+              if(ilabel != ""){
                   clusterLabels[clusterLabels==clusteri] <- ilabel
                 }
               }

@@ -15,13 +15,14 @@
 #'   Rphenograph.
 #' @param FlowSOM_k Number of clusters for meta clustering in FlowSOM.
 #' @param flowSeed Integer to set a seed for FlowSOM for reproducible results.
+#' @param ... Parameters passed to clustering methods.
 #'
 #' @return a vector of the clusters assigned for each row of the ydata
 #' @importFrom Rphenograph Rphenograph
 #' @importFrom igraph membership
 #' @export
 #' @examples
-#' d<-system.file('extdata', package='cytofkit')
+#' d<-system.file('extdata',package='cytofkitlab')
 #' fcsFile <- list.files(d, pattern='.fcs$', full=TRUE)
 #' parameters <- list.files(d, pattern='.txt$', full=TRUE)
 #' markers <- as.character(read.table(parameters, header = FALSE)[, 1])

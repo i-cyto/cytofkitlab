@@ -33,7 +33,7 @@ cytof_addToFCS(
 
 \item{specifySampleNames}{Used only if sample names differ from those in raw fcs.}
 
-\item{inLgclTrans}{If \verb{TRUE}, apply the inverse lgcl transformation to the the cluster data before saving}
+\item{inLgclTrans}{If \verb{TRUE}, apply the inverse lgcl transformation to the cluster data before saving}
 }
 \value{
 New fcs files stored under \code{analyzedFCSdir}

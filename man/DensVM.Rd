@@ -18,7 +18,7 @@ a list contains a matrix \code{peakdata} of the peak numbers with different kern
 Density-based local maxima peak finding, subpopulation assigning with the power of SVM
 }
 \examples{
-d<-system.file('extdata',package='cytofkit')
+d<-system.file('extdata',package='cytofkitlab')
 fcsFile <- list.files(d,pattern='.fcs$',full=TRUE)
 xdata <- cytof_exprsMerge(fcsFile, mergeMethod = 'fixed', fixedNum = 100)
 ydata <- cytof_dimReduction(xdata)

@@ -10,7 +10,7 @@
 #' @param clusterID character string that specifies which label should be used
 #'   to retrieve the cluster identifiers. Typically, this should be
 #'   "FlowSOM_clusterIDs", "Rphenograph_clusterIDs" or "ClusterX_clusterIDs"
-#' @param cleanup logical that specifies to remove extra channels added by
+#' @param cleanUp logical that specifies to remove extra channels added by
 #'   Cytofkit
 #'
 #' @return The function returns an object of class
@@ -30,18 +30,46 @@
 #'
 #'   NB: No compensation nor transformation is applied to the data.
 #'
+#' @importFrom methods new
+#' 
 #' @keywords read, data, FCS, cytofast
 #'
 #' @examples
-#' dirFCS <- system.file("extdata", package="cytofast")
-#' cfData <- readCytofkitFCS(dir = dirFCS, colNames = "description")
+#' 
+#' # Directory of input FCS
+#' dirFCS <- system.file('extdata',package='cytofkitlab')
+#' # For demo, simulate a dir of results and copy the demo result .RData file
+#' dirRes <- tempdir()
+#' file.copy(file.path(dirFCS, "demo_fcs.RData"), file.path(dirRes, "demo_fcs.RData"))
+#' # Load an annotated result .RData
+#' load(file.path(dirRes, "demo_fcs.RData"))
+#' # Write clustered data with Rphenograph to FCS files in a temporary directory
+#' cytof_writeResults(
+#'     analysis_results,  # from load function
+#'     projectName = "demo",
+#'     saveToRData = FALSE,
+#'     saveToFCS = TRUE,
+#'     saveToFiles = FALSE,
+#'     resultDir = dirRes,
+#'     rawFCSdir = dirFCS,
+#'     inverseLgclTrans = FALSE)
+#' # Verify the FCS files
+#' #   fn <- dir(file.path(tempdir(), paste0("demo","_analyzedFCS")), full.names = TRUE)
+#' #   flowCore::read.FCS(fn)
+#' # Read FCS files into a cytofast cfList object
+#' cfData <- readCytofkitFCS(
+#'     dir = file.path(dirRes, paste0("demo","_analyzedFCS")),
+#'     colNames = "description",
+#'     clusterID = "Rphenograph_clusterIDs"
+#' )
+#' cfData
 #'
 #' @export
 readCytofkitFCS <- function(
     dir = NULL, 
     colNames = c("description", "names"), 
     clusterID = "FlowSOM_clusterIDs",
-    clean.up = TRUE
+    cleanUp = TRUE
 ) {
     if (!requireNamespace("cytofast", quietly = TRUE)) {
         stop("Package \"cytofast\" needed for this function to work. Please install it.",
@@ -63,8 +91,8 @@ readCytofkitFCS <- function(
     
     # Check arguments
     colNames <- match.arg(colNames)
-    if(!is.logical(clean.up))
-        stop("clean.up parameter should be TRUE or FALSE")
+    if(!is.logical(cleanUp))
+        stop("cleanUp parameter should be TRUE or FALSE")
     
     # Check clusterID column name
     colnamesFCS <- flowCore::colnames(flowCore::read.FCS(
@@ -108,7 +136,7 @@ readCytofkitFCS <- function(
     x <- x[,c("clusterID", "sampleID",
               setdiff(colnames(x), c("clusterID", "sampleID")))]
     # Clean up
-    if (clean.up) {
+    if (cleanUp) {
         keep <- colnames(x)  # all
         # keep <- keep[!grepl("^(pca|tsne|umap)", keep)]  # no reduced dimensions
         # keep <- keep[!grepl("^(Rphenograph|ClusterX|FlowSOM)", keep)]  # no clustering
@@ -119,7 +147,7 @@ readCytofkitFCS <- function(
         x <- x[, keep]
     }
     # Return
-    new("cfList", expr = x,
+    methods::new("cfList", expr = x,
         samples = data.frame(sampleID = levels(x$sampleID),
                              row.names = levels(x$sampleID),
                              FCSfilename = FCSFileNames))

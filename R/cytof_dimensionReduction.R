@@ -18,7 +18,7 @@
 #' @importFrom vegan vegdist spantree isomap
 #' @importFrom Rtsne Rtsne
 #' @importFrom destiny DiffusionMap
-# @importFrom utils compareVersion packageVersion
+#' @importFrom parallel detectCores
 #' @import stats
 #' @importFrom uwot umap
 #' @export
@@ -177,7 +177,7 @@ cytof_dimReduction <- function(data,
                    metric = "euclidean",  # default metric
                    n_components = 2,      # fixed, although out_dim is passed
                    scale = "colrange",    # same as default scaling in tSNE
-                   n_threads = max(1, RcppParallel::defaultNumThreads()-1),
+                   n_threads = max(1, parallel::detectCores()-1),
                    ret_model = TRUE       # allow mapping new data
                )
                # merge options and execute

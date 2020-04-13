@@ -45,7 +45,7 @@ with selected markers, then expression matrix are extracted and merged using one
 \code{all}, \code{min}, \code{fixed} or \code{ceil}
 }
 \examples{
-d<-system.file('extdata',package='cytofkit')
+d<-system.file('extdata',package='cytofkitlab')
 fcsFiles <- list.files(d,pattern='.fcs$',full=TRUE)
 merged <- cytof_exprsMerge(fcsFiles)
 }
