@@ -21,7 +21,7 @@
 #' @seealso \code{\link{cytof_exprsExtract}}
 #' @export
 #' @examples
-#' d<-system.file('extdata',package='cytofkit')
+#' d<-system.file('extdata',package='cytofkitlab')
 #' fcsFiles <- list.files(d,pattern='.fcs$',full=TRUE)
 #' merged <- cytof_exprsMerge(fcsFiles)
 cytof_exprsMerge <- function(fcsFiles, 
@@ -119,7 +119,7 @@ cytof_exprsMerge <- function(fcsFiles,
 #' @importClassesFrom flowCore transformList
 #' @export
 #' @examples
-#' d <- system.file('extdata',package='cytofkit')
+#' d <- system.file('extdata',package='cytofkitlab')
 #' fcsFile <- list.files(d,pattern='.fcs$',full=TRUE)
 #' transformed <- cytof_exprsExtract(fcsFile)
 cytof_exprsExtract <- function(fcsFile, 

@@ -1,1 +1,1 @@
-BiocGenerics:::testPackage("cytofkit")
+BiocGenerics:::testPackage("cytofkitlab")

@@ -7,7 +7,7 @@
 fixedAsinhParameters_GUI(fixedAsinhParas = c(0, 1/5, 0))
 }
 \arguments{
-\item{fixedLgclParas}{parameters vector containing w, t, m, a}
+\item{fixedAsinhParas}{parameters vector containing w, t, m, a}
 }
 \value{
 Parameters for fixed asinh transformation

@@ -22,12 +22,11 @@
 #' @importFrom flowCore write.FCS flowFrame inverseLogicleTransform
 #' @importFrom grDevices dev.off pdf rainbow
 #' @importFrom graphics par
-#' @importFrom colourpicker colourInput
 #' @importFrom utils read.table write.csv
 #' @export
 #' @seealso \code{\link{cytofkit}}
 #' @examples
-#' d <- system.file('extdata',package='cytofkit')
+#' d <- system.file('extdata',package='cytofkitlab')
 #' f <- list.files(d, pattern='.fcs$', full=TRUE)
 #' p <- list.files(d, pattern='.txt$', full=TRUE)
 #' #tr <- cytofkit(fcsFile=f,markers=p,projectName='t',saveResults=FALSE)
@@ -387,7 +386,7 @@ cytof_clusterPlot <- function(data, xlab, ylab, cluster, sample, title = "cluste
 #' @param margins Numeric vector of length 2 containing the margins (see par(mar= *)) for column and row names, respectively.
 #' @return A heatmap object from \code{gplots}
 #' 
-#' @importFrom gplots heatmap.2 bluered   
+#' @importFrom gplots heatmap.2
 #' 
 #' @export
 #' @examples
@@ -647,7 +646,7 @@ cytof_clusterStat <- function(data, markers, cluster = "cluster", sample,
 #' @export
 #' 
 #' @examples  
-#' dir <- system.file('extdata',package='cytofkit')
+#' dir <- system.file('extdata',package='cytofkitlab')
 #' file <- list.files(dir ,pattern='.RData$', full=TRUE)
 #' load(file)
 #' cluster2_table <- cytof_clusterMtrx(analysis_results, "Rphenograph", 2)
@@ -823,7 +822,7 @@ cytof_progressionPlot <- function(data, markers, clusters,
 #' @param cluster_cols The column name of the cluster data in \code{data}.
 #' @param clusterIDs Table of cell cluster IDs for each clustering method
 #' @param specifySampleNames Used only if sample names differ from those in raw fcs.
-#' @param inLgclTrans If \verb{TRUE}, apply the inverse lgcl transformation to the the cluster data before saving
+#' @param inLgclTrans If \verb{TRUE}, apply the inverse lgcl transformation to the cluster data before saving
 #' 
 #' @export
 #' 

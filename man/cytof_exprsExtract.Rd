@@ -56,7 +56,7 @@ and transformation. Transformtion methods includes \code{autoLgcl}, \code{cytofA
 \code{logicle} (customizable) and \code{arcsinh} (customizable).
 }
 \examples{
-d <- system.file('extdata',package='cytofkit')
+d <- system.file('extdata',package='cytofkitlab')
 fcsFile <- list.files(d,pattern='.fcs$',full=TRUE)
 transformed <- cytof_exprsExtract(fcsFile)
 }

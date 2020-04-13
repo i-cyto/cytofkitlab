@@ -837,6 +837,7 @@ getParameters_GUI <- function(fcsFile, rawFCSdir) {
 #' @examples
 #' #storeMarkers_GUI()
 #' @import tcltk
+#' @importFrom utils write.table
 #' @export
 storeMarkers_GUI <- function(markerFile, rawFCSdir, fcsFile) {
     # default marker file name
@@ -865,12 +866,12 @@ storeMarkers_GUI <- function(markerFile, rawFCSdir, fcsFile) {
         }
     }
     # call the GUI to select markers
-    markers <- cytofkitlab:::getParameters_GUI(fcsFile, rawFCSdir)
+    markers <- getParameters_GUI(fcsFile, rawFCSdir)
     if (length(markers) == 0) {
         warning("No marker selected!")
     } else {
         # write the list as a table to disk
-        write.table(data.frame(markers), file.path(rawFCSdir, markerFile),
+        utils::write.table(data.frame(markers), file.path(rawFCSdir, markerFile),
                     row.names = FALSE, quote = FALSE)
     }
     # return path
@@ -955,7 +956,7 @@ fixedLogicleParameters_GUI <- function(fixedLgclParas=c(0.5, 500000, 4.5, 0)) {
 #' 
 #' Extract the parameter for fixed asinh transformation
 #' 
-#' @param fixedLgclParas parameters vector containing w, t, m, a
+#' @param fixedAsinhParas parameters vector containing w, t, m, a
 #' @return Parameters for fixed asinh transformation
 #' @examples 
 #' #fixedAsinhParameters_GUI

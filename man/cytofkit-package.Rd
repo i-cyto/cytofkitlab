@@ -57,7 +57,7 @@ All the above post processing can be automatically implemented and saved using o
 #cytofkit_GUI()  # remove the hash symbol to launch the GUI
 
 ## Run on command
-dir <- system.file('extdata',package='cytofkit')
+dir <- system.file('extdata',package='cytofkitlab')
 file <- list.files(dir, pattern='.fcs$', full=TRUE)
 parameters <- list.files(dir, pattern='.txt$', full=TRUE)
 ## remove the hash symbol to run the following command

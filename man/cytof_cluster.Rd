@@ -28,6 +28,8 @@ Rphenograph.}
 \item{FlowSOM_k}{Number of clusters for meta clustering in FlowSOM.}
 
 \item{flowSeed}{Integer to set a seed for FlowSOM for reproducible results.}
+
+\item{...}{Parameters passed to clustering methods.}
 }
 \value{
 a vector of the clusters assigned for each row of the ydata
@@ -41,7 +43,7 @@ dimensional xdata. \code{FlowSOM} is integrated from FlowSOM package
 (https://bioconductor.org/packages/release/bioc/html/FlowSOM.html).
 }
 \examples{
-d<-system.file('extdata', package='cytofkit')
+d<-system.file('extdata',package='cytofkitlab')
 fcsFile <- list.files(d, pattern='.fcs$', full=TRUE)
 parameters <- list.files(d, pattern='.txt$', full=TRUE)
 markers <- as.character(read.table(parameters, header = FALSE)[, 1])

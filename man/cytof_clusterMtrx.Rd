@@ -21,7 +21,7 @@ Generate a matrix of expression values for cells in a cluster
 }
 \examples{
  
-dir <- system.file('extdata',package='cytofkit')
+dir <- system.file('extdata',package='cytofkitlab')
 file <- list.files(dir ,pattern='.RData$', full=TRUE)
 load(file)
 cluster2_table <- cytof_clusterMtrx(analysis_results, "Rphenograph", 2)

@@ -44,7 +44,7 @@ Infer the progression based on the relationship of cell subsets estimated
 using ISOMAP or Diffusion map.
 }
 \examples{
-d<-system.file('extdata', package='cytofkit')
+d<-system.file('extdata',package='cytofkitlab')
 fcsFile <- list.files(d, pattern='.fcs$', full=TRUE)
 parameters <- list.files(d, pattern='.txt$', full=TRUE)
 markers <- as.character(read.table(parameters, header = TRUE)[, 1])

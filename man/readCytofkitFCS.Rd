@@ -8,7 +8,7 @@ readCytofkitFCS(
   dir = NULL,
   colNames = c("description", "names"),
   clusterID = "FlowSOM_clusterIDs",
-  clean.up = TRUE
+  cleanUp = TRUE
 )
 }
 \arguments{
@@ -22,7 +22,7 @@ description for the markers 'description'.}
 to retrieve the cluster identifiers. Typically, this should be
 "FlowSOM_clusterIDs", "Rphenograph_clusterIDs" or "ClusterX_clusterIDs"}
 
-\item{cleanup}{logical that specifies to remove extra channels added by
+\item{cleanUp}{logical that specifies to remove extra channels added by
 Cytofkit}
 }
 \value{
@@ -49,8 +49,34 @@ To successfully read the .FCS files created by cytofkit make sure that
   NB: No compensation nor transformation is applied to the data.
 }
 \examples{
-dirFCS <- system.file("extdata", package="cytofast")
-cfData <- readCytofkitFCS(dir = dirFCS, colNames = "description")
+
+# Directory of input FCS
+dirFCS <- system.file('extdata',package='cytofkitlab')
+# For demo, simulate a dir of results and copy the demo result .RData file
+dirRes <- tempdir()
+file.copy(file.path(dirFCS, "demo_fcs.RData"), file.path(dirRes, "demo_fcs.RData"))
+# Load an annotated result .RData
+load(file.path(dirRes, "demo_fcs.RData"))
+# Write clustered data with Rphenograph to FCS files in a temporary directory
+cytof_writeResults(
+    analysis_results,  # from load function
+    projectName = "demo",
+    saveToRData = FALSE,
+    saveToFCS = TRUE,
+    saveToFiles = FALSE,
+    resultDir = dirRes,
+    rawFCSdir = dirFCS,
+    inverseLgclTrans = FALSE)
+# Verify the FCS files
+#   fn <- dir(file.path(tempdir(), paste0("demo","_analyzedFCS")), full.names = TRUE)
+#   flowCore::read.FCS(fn)
+# Read FCS files into a cytofast cfList object
+cfData <- readCytofkitFCS(
+    dir = file.path(dirRes, paste0("demo","_analyzedFCS")),
+    colNames = "description",
+    clusterID = "Rphenograph_clusterIDs"
+)
+cfData
 
 }
 \keyword{FCS,}

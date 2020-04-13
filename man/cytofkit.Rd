@@ -51,6 +51,8 @@ fixedNum) from each fcs file and combined for analysis.}
 
 \item{fixedNum}{The fixed number of cells to be extracted from each FCS file.}
 
+\item{normalizeMethod}{The normalization nmethod prior to clustering and dimension reduction. Any choice "default", "tsne", "umap", "quantile_100_evts". Default = as defined in original cytofkit package.}
+
 \item{dimReductionMethod}{The method used for dimensionality reduction, including \code{tsne}, \code{pca} and \code{isomap}.}
 
 \item{clusterMethods}{The clustering method(s) used for subpopulation detection, including \code{DensVM}, \code{ClusterX}, \code{Rphenograph} and \code{FlowSOM}. Multiple selections are accepted.}
@@ -96,7 +98,7 @@ interactive web application is provided for interactive exploration of the analy
 see \code{cytofkitShinyAPP}.
 }
 \examples{
-dir <- system.file('extdata',package='cytofkit')
+dir <- system.file('extdata',package='cytofkitlab')
 file <- list.files(dir, pattern='.fcs$', full=TRUE)
 parameters <- list.files(dir, pattern='.txt$', full=TRUE)
 ## remove the hash symbol to run the following command

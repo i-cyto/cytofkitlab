@@ -52,7 +52,7 @@
 #' #cytofkit_GUI()  # remove the hash symbol to launch the GUI
 #' 
 #' ## Run on command
-#' dir <- system.file('extdata',package='cytofkit')
+#' dir <- system.file('extdata',package='cytofkitlab')
 #' file <- list.files(dir, pattern='.fcs$', full=TRUE)
 #' parameters <- list.files(dir, pattern='.txt$', full=TRUE)
 #' ## remove the hash symbol to run the following command
@@ -100,6 +100,7 @@ NULL
 #' \code{fixed}: a fixed num (specified by fixedNum) of cells are sampled (with replacement when the total number of cell is less than 
 #' fixedNum) from each fcs file and combined for analysis.
 #' @param fixedNum The fixed number of cells to be extracted from each FCS file.
+#' @param normalizeMethod The normalization nmethod prior to clustering and dimension reduction. Any choice "default", "tsne", "umap", "quantile_100_evts". Default = as defined in original cytofkit package.
 #' @param dimReductionMethod The method used for dimensionality reduction, including \code{tsne}, \code{pca} and \code{isomap}.
 #' @param clusterMethods The clustering method(s) used for subpopulation detection, including \code{DensVM}, \code{ClusterX}, \code{Rphenograph} and \code{FlowSOM}. Multiple selections are accepted.
 #' @param visualizationMethods The method(s) used for visualize the cluster data, including \code{tsne}, \code{pca} and \code{isomap}. Multiple selections are accepted.
@@ -120,7 +121,7 @@ NULL
 #' @seealso \code{\link{cytofkit}}, \code{\link{cytofkit_GUI}}, \code{\link{cytofkitShinyAPP}}
 #' @export
 #' @examples
-#' dir <- system.file('extdata',package='cytofkit')
+#' dir <- system.file('extdata',package='cytofkitlab')
 #' file <- list.files(dir, pattern='.fcs$', full=TRUE)
 #' parameters <- list.files(dir, pattern='.txt$', full=TRUE)
 #' ## remove the hash symbol to run the following command
@@ -389,7 +390,7 @@ cytofkit <- function(fcsFiles = getwd(),
 #' @export
 cytofkitNews <- function() 
 {
-    newsfile <- file.path(system.file(package = "cytofkit"),
+    newsfile <- file.path(system.file(package = "cytofkitlab"),
                           "NEWS.Rd")
     file.show(newsfile)
 }
