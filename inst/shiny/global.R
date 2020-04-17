@@ -7,6 +7,12 @@ require(VGAM)
 require(colourpicker)
 require(gplots)
 
+library(grDevices)
+library(graphics)
+
+require(shiny)
+require(shinyFiles)
+
 
 ## Main function for scatter plot
 scatterPlot <- function(obj, plotMethod, plotFunction, pointSize=1, alpha = 1,
@@ -261,7 +267,7 @@ heatMap <- function(data, clusterMethod = "DensVM", type = "mean",
 #' @importFrom plyr ldply
 #' @importFrom reshape2 melt
 #' @import ggplot2
-stackDenistyPlot <- function(data, densityCols, stackFactor,
+stackDensityPlot <- function(data, densityCols, stackFactor,
                              kernel = c("gaussian", "epanechnikov", "rectangular",
                                         "triangular", "biweight",
                                         "cosine", "optcosine"),
@@ -376,7 +382,7 @@ stackDenistyPlot <- function(data, densityCols, stackFactor,
 }
 
 
-#' Internal density calculation function serves for \code{stackDenistyPlot}
+#' Internal density calculation function serves for \code{stackDensityPlot}
 #'
 #' Output data frame with columns: stackName, x , y , densityName
 .densityCal <- function(data, kernel, bw, adjust, reomoveOutliers = FALSE){

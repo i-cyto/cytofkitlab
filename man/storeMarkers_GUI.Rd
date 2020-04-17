@@ -14,7 +14,7 @@ storeMarkers_GUI(markerFile, rawFCSdir, fcsFile)
 \item{fcsFile}{The name of the FCS file}
 }
 \value{
-List of markers for ddimension reduction and clustering
+List of markers for dimension reduction and clustering
 }
 \description{
 Extract the markers from the fcsfiles, write the selection into a file and returns the directory

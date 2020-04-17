@@ -4,24 +4,31 @@
 \alias{cytofkitShinyAPP}
 \title{A Shiny APP to interactively visualize the analysis results}
 \usage{
-cytofkitShinyAPP(RData = NULL, onServer = FALSE)
+cytofkitShinyAPP(RData = NULL, onServer = FALSE, port = NULL)
 }
 \arguments{
-\item{RData}{Either the RData object file or data object, if missing, RData file need to be loaded on the ShinyAPP}
+\item{RData}{Either the RData object file or data object, if missing, RData file need to be
+loaded on the ShinyAPP}
 
-\item{onServer}{Logical value, if \verb{TRUE}, sets shinyApp host to 0.0.0.0 for other clients to access, otherwise defaults to 127.0.0.1 (local host)}
+\item{onServer}{Logical value, if \verb{TRUE}, sets shinyApp host to 0.0.0.0 for other clients to
+access, otherwise defaults to 127.0.0.1 (local host)}
+
+\item{port}{Integer value, specifies a port for shinyApp for other clients to access, otherwise
+automatic selection}
 }
 \value{
 Opens shinyApp session for data visualisation
 }
 \description{
-Take the the RData object file saved by cytofkit as input, automatically load the data and allow exploration of the analysis results with interactive control
+Take the the RData object file saved by cytofkit as input, automatically load the data and allow
+exploration of the analysis results with interactive control
 }
 \examples{
 d <- system.file('extdata',package='cytofkitlab')
 Rdata <- list.files(d, pattern = '.RData$', full.names = TRUE)
 #only for interactive sessions, remove hash to run
 #cytofkitShinyAPP(Rdata)
+
 }
 \author{
 Hao Chen
