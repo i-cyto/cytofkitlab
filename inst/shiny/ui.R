@@ -1,8 +1,4 @@
-library(shiny)
-library(shinyFiles)
-#currently unused
-
-shinyUI(fluidPage(
+ui <- fluidPage(
     titlePanel("Interactive Exploration of cytofkit Analysis Results"),
     hr(),
     fluidRow(
@@ -15,6 +11,7 @@ shinyUI(fluidPage(
                              multiple = FALSE,
                              accept = c('text/RData', '.RData')),
                    shinyFilesButton('serverObj', label = "Server File Select", title = "Please select your RData", multiple = FALSE),
+                   br(),
                    textOutput("queryText"),
                    textOutput("rdata_desc"),
                    fluidRow(
@@ -493,4 +490,4 @@ shinyUI(fluidPage(
                )
         )
     )
-))
+)

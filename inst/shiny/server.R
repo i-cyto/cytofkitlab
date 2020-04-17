@@ -1,12 +1,5 @@
-## max data size
-#currrently unused
-
-options(shiny.maxRequestSize=1024^10)
-options(shiny.launch.browser = T)
-options(shiny.host = "0.0.0.0")
-
-shinyServer(function(input, output, session) {
-  
+server <- function(input, output, session) {
+    
   ##------------------Reactive Values and Reactive Objects-------------------
   
   #if?
@@ -15,10 +8,10 @@ shinyServer(function(input, output, session) {
   p <- reactiveValues(progressionCluster = NULL)
 
   #parseQueryString to use .RData path as analysis results
-  output$queryText <- renderText({
-    query <- parseQueryString(session$clientData$url_search)
-    if(!length(query) == 0){
-      load(query[["fcspath"]])
+  # output$queryText <- renderText({
+  #   query <- parseQueryString(session$clientData$url_search)
+  #   if(!length(query) == 0){
+  #     load(query[["fcspath"]])
       if(exists("analysis_results")){
         if(!is.null(analysis_results)) {
           v$data <- analysis_results
@@ -26,13 +19,13 @@ shinyServer(function(input, output, session) {
                                      cellSample = factor(sub("_[0-9.]+$", "", row.names(analysis_results$expressionData))),
                                      stringsAsFactors = FALSE)
           p$progressionCluster <- names(analysis_results$clusterRes)[1]
-          paste0("Loaded: ", query[["fcspath"]])
+          # paste0("Loaded: ", query[["fcspath"]])
         }
       }
-    }else{
-      return(NULL)
-    }
-  })
+  #   }else{
+  #     return(NULL)
+  #   }
+  # })
   
   ## Scatter plot methods
   visualizationMethods <- reactive({
@@ -106,7 +99,7 @@ shinyServer(function(input, output, session) {
   })
   
   ## For user, set roots option to your server directory 
-  roots <- c(a=a)
+  # roots <- c(a=a) ??
   shinyFileChoose(input, 'serverObj', session = session, roots = roots, filetypes = "RData")
   
   observeEvent(input$serverObj, {
@@ -299,6 +292,12 @@ shinyServer(function(input, output, session) {
           markerNames <- markerNames[order(markerNames)]
           checkboxGroupInput('c_markerSelect', strong('Select Markers:'),
                              markerNames, selected = markerNames, inline = TRUE)
+              # checkboxGroupInput('c_markerSelect', strong('Select Markers:'),
+              #                    markerNames, selected = markerNames, inline = TRUE)
+              initNum <- ifelse(length(markerNames) >= 4, 4, 1)
+              selectizeInput('c_markerSelect', strong('Select Markers:'),
+                             choices = markerNames, selected = markerNames[1:initNum], 
+                             multiple = TRUE, width = "100%")
       }   
   })
   
@@ -425,10 +424,10 @@ shinyServer(function(input, output, session) {
           
           if (i <= length(clusterLabel)){
               x <- clusterLabel[i]
-              colourInput(inputId=paste0('cluster_', i, '_col'), 
-                          label=paste0('Cluster ', x," Colour :"), 
-                          value = clusterColor[i], showColour = "both", 
-                          palette = "square")
+              colourPicker::colourInput(inputId=paste0('cluster_', i, '_col'), 
+                                        label=paste0('Cluster ', x," Colour :"), 
+                                        value = clusterColor[i], showColour = "both", 
+                                        palette = "square")
           }
       })
   })
@@ -642,7 +641,8 @@ shinyServer(function(input, output, session) {
   })
   
   session$onSessionEnded(function(){
-      file.remove("cytofkit_shinyAPP_marker_heatmap.pdf")
+      if (file.exists("cytofkit_shinyAPP_marker_heatmap.pdf"))
+          file.remove("cytofkit_shinyAPP_marker_heatmap.pdf")
   })
   
   ##-----level plot-----
@@ -804,7 +804,7 @@ shinyServer(function(input, output, session) {
               }
               
               incProgress(1/3)
-              gp <- stackDenistyPlot(data = data, 
+              gp <- stackDensityPlot(data = data, 
                                      densityCols=m_markerSelect, 
                                      stackFactor = stackFactor,
                                      kernel = "gaussian",
@@ -1440,7 +1440,4 @@ shinyServer(function(input, output, session) {
           updateTabsetPanel(session, "P_progressionTabs", selected = "P_tab1")
       }
   })
-})
-
-
-
+}

@@ -731,6 +731,8 @@ cytof_progressionPlot <- function(data, markers, clusters,
         data <- data[data[[clusterCol]] %in% clusters, , drop=FALSE]
     }
     
+    Pseudotime <- cluster <- NULL  # avoid notes
+    
     if(reverseOrder){
         newOrderCol <- paste0(orderCol, "(reverse)")
         data[[newOrderCol]] <- -data[[orderCol]]

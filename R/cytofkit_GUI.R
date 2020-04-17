@@ -802,8 +802,8 @@ getParameters_GUI <- function(fcsFile, rawFCSdir) {
     tkwm.title(mm, "cytofkit: Marker Selection")
     scr <- tkscrollbar(mm, repeatinterval = 5, command = function(...) tkyview(tl, 
         ...))
-    tl <- tklistbox(mm, height = 30, width = 40, selectmode = "multiple", yscrollcommand = function(...) tkset(scr, 
-        ...), background = "white")
+    tl <- tklistbox(mm, height = 30, width = 40, selectmode = "multiple", 
+                    yscrollcommand = function(...) tkset(scr, ...), background = "white")
     OnOK <- function() {
         tclvalue(markerChoice) <- paste(markers[as.numeric(tkcurselection(tl)) + 
             1], collapse = "}{")
@@ -833,7 +833,7 @@ getParameters_GUI <- function(fcsFile, rawFCSdir) {
 #' @param markerFile The name of the FCS file
 #' @param rawFCSdir The path of the FCS file
 #' @param fcsFile The name of the FCS file
-#' @return List of markers for ddimension reduction and clustering
+#' @return List of markers for dimension reduction and clustering
 #' @examples
 #' #storeMarkers_GUI()
 #' @import tcltk
@@ -877,6 +877,40 @@ storeMarkers_GUI <- function(markerFile, rawFCSdir, fcsFile) {
     # return path
     message("Path of FCS files: ", rawFCSdir)
     return(rawFCSdir)
+}
+
+#' GUI for file selection selection (for cytofast analysis)
+#'
+#' Returns the selected files; mainly a wrapper of tk_choose.files()
+#'
+#' @param default directory to start with; defult to working directory
+#' @param caption short to recap the aim of file selection; default to "Choose a file"
+#' @param multi logical, whether one (FALSE) or multiple (TRUE) could be selected; default FALSE
+#' @param filters matrix of file extensiosn; see tk_choose.files
+#' @param text a long text to describe the context of the file selection
+#' @return The path of the directory containing FCS files
+#' @examples
+#' #chooseDir_GUI()
+#' @import tcltk
+#' @export
+chooseFiles_GUI <- function(default = getwd(), caption = "Choose a file", 
+                            multi = FALSE, filters = NULL, text)
+{
+    # Open a Tk window and open a file chooser
+    mm <- tktoplevel(borderwidth = 10, bg = "white", width = 400, height = 200)
+    tcl("wm", "attributes", mm, topmost=TRUE)  # put it in front
+    tcl("wm", "attributes", mm, topmost=FALSE)
+    tkwm.title(mm, "cytofkit: Select a directory")
+    tkpack.propagate(mm, FALSE)
+    text <- ifelse(missing(text), caption, paste0(caption, "\n\n", text))  
+    tkpack(tklabel(mm, text = text), pady = 10, bg = "white")
+    #tkpack(tklabel(mm, text = text), pady = 30, fill = "both")
+    tkraise(mm)
+    theFiles <- tk_choose.files(default = default, caption = caption, 
+                                multi = multi, filters = filters)
+    tkdestroy(mm)
+    # return files
+    return(theFiles)
 }
 
 #' GUI for gettting parameter for logicle transformation
