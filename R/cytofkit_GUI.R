@@ -900,10 +900,10 @@ chooseFiles_GUI <- function(default = getwd(), caption = "Choose a file",
     mm <- tktoplevel(borderwidth = 10, bg = "white", width = 400, height = 200)
     tcl("wm", "attributes", mm, topmost=TRUE)  # put it in front
     tcl("wm", "attributes", mm, topmost=FALSE)
-    tkwm.title(mm, "cytofkit: Select a directory")
+    tkwm.title(mm, "cytofkit")
     tkpack.propagate(mm, FALSE)
     text <- ifelse(missing(text), caption, paste0(caption, "\n\n", text))  
-    tkpack(tklabel(mm, text = text), pady = 10, bg = "white")
+    tkpack(tklabel(mm, text = text, pady = 10, bg = "white"))
     #tkpack(tklabel(mm, text = text), pady = 30, fill = "both")
     tkraise(mm)
     theFiles <- tk_choose.files(default = default, caption = caption, 

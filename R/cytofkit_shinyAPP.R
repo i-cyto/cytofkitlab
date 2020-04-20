@@ -39,17 +39,21 @@ cytofkitShinyAPP  <- function(RData = NULL, onServer = FALSE, port = NULL) {
   roots <- c(wd=getwd(), Home = "~")
   if(!missing(RData)){
     if(is.character(RData)) {
-      if(file.exists(RData))
-        stop("RData file doesn't exist! Please check your obj file")
+      if(!file.exists(RData))
+        stop("RData file doesn't exist! Please check your obj file.")
       if(!grepl("\\.RData$", RData))
         stop("Argument is not .RData file!")
       load(RData)
       direct_analysis_results <- analysis_results
       message(".RData loaded!")
     }else{
+      if(!is.list(RData))
+        stop("RData is not a list! Please check your obj file.")
       analysis_results <- RData
     }
-    
+    # quick check
+    if (!all(c("expressionData", "dimReductionMethod", "clusterRes") %in% names(analysis_results)))
+      stop("RData does not have the required slots! Please check your obj file.")
     if(is.null(analysis_results$projectName)){
       analysis_results$projectName <- "cytofkit_shinyAPP_output"
     }
