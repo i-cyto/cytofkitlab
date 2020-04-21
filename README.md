@@ -20,9 +20,9 @@ cytofkit**lab** does not include the Phenograph clustering anymore. Phenograph i
 
 If you have never used R, please install R and Rstudio following the steps below:
 
-- Download the proper R version for your operation system from [R download page](http://cran.stat.nus.edu.sg).
+- Download the proper R version for your operation system from [R download page](https://cran.r-project.org).
 
-- Double-click the downloaded R installation file, install with all the defaults.
+- Double-click the downloaded R installation file. For Windows, install with the 64 bits version with core files, but not the 32 bits version and neither the translations, as it is easier to find help in english using web search engines. For other OS, use defaults.
 
 - Download the proper Rstudio version for your operation system from [here](https://www.rstudio.com/products/rstudio/download/).
 
@@ -42,7 +42,18 @@ For Mac OS X 10.8 or later, you need to install XQuartz to support the GUI:
 
 #### 2. Install cytofkitlab package
 
-The Phenograph algorithm must be installed as a separated package Rphenograph:
+The Phenograph algorithm must be installed as a separated package Rphenograph.
+
+For Windows, if you installed R 64 bits (without 32 bits) you can quickly install Rphenograph binary
+version for R 64 bits with the following commands:
+
+``` r
+# if not already installed, install Rphenograph from binary release for R 64 bits on Windows
+if (!requireNamespace("Rphenograph", quietly = TRUE))
+  install.packages("https://github.com/i-cyto/Rphenograph/releases/download/0.99.1.9002/Rphenograph_0.99.1.9002.zip", repos = NULL, type = "win.binary")
+```
+
+For all other configurations, please use a classical installation approach:
 
 ``` r
 # install devtools if not already done
