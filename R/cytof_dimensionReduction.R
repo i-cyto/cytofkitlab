@@ -97,7 +97,8 @@ cytof_dimReduction <- function(data,
                    initial_dims = ncol(marker_filtered_data), 
                    dims = 2, 
                    check_duplicates = FALSE, 
-                   pca = TRUE
+                   pca = TRUE,
+                   num_threads = 0
                )
                # merge options and execute
                tsne.opts <- merge_options("tsne", tsne.opts, list(...))
