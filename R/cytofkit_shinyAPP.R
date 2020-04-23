@@ -88,9 +88,11 @@ cytofkitShinyAPP  <- function(RData = NULL, onServer = FALSE, port = NULL) {
 
   # add options
   host <- ifelse(isTRUE(onServer), "0.0.0.0", "127.0.0.1")
-  options(shiny.launch.browser = TRUE, shiny.host = host, shiny.maxRequestSize=1024^10)
+  options(shiny.launch.browser = TRUE,
+          shiny.host = host,
+          shiny.maxRequestSize = 8 * 1024^3)  # 8 GB
   if(!is.null(port) && is.integer(port)) options(shiny.port = port)
-  
+
   # launch
   app <- shiny::shinyApp(ui, server)
   shiny::runApp(app)

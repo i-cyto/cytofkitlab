@@ -1,9 +1,10 @@
 ui <- fluidPage(
-    titlePanel("Interactive Exploration of cytofkit Analysis Results"),
-    hr(),
+    title = "cytofkit explorer",
+    " ",
     fluidRow(
         ## side panel--take 1/4 space
         column(3,
+               h2("Interactive Exploration of cytofkit Analysis Results"), hr(),
                h4('Load cytofkit RData:'),
                wellPanel(
                    fileInput(inputId = 'cytofkitObj',
@@ -155,13 +156,18 @@ ui <- fluidPage(
                                                         column(3,
                                                                uiOutput("C_PlotMethod")
                                                         ),
+                                                        column(2,
+                                                               selectInput("c_PlotColor",
+                                                                           "Color by:",
+                                                                           c("Cluster", "Sample", "Density", "None"))
+                                                        ),
                                                         column(3, 
                                                                uiOutput("C_PlotFunction")
                                                         ),
-                                                        column(3,
+                                                        column(2,
                                                                numericInput("C_PointSize", "Point Size:", value = 1)
                                                         ),
-                                                        column(3, 
+                                                        column(2, 
                                                                numericInput("C_LabelSize", "Label Size:", value = 12)
                                                         )
                                                     ),

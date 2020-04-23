@@ -6,6 +6,14 @@ server <- function(input, output, session) {
   v <- reactiveValues(data = NULL, sampleInfo = NULL)
   c <- reactiveValues(clusterCol = list())
   p <- reactiveValues(progressionCluster = NULL)
+  
+  uiConf <- reactiveValues(
+    markers = c(),
+    dimrChn = "",
+    clusChn = "",
+    exprPal = c(),
+    clusPal = c()
+  )
 
   #parseQueryString to use .RData path as analysis results
   # output$queryText <- renderText({
@@ -20,6 +28,7 @@ server <- function(input, output, session) {
                                      stringsAsFactors = FALSE)
           p$progressionCluster <- names(analysis_results$clusterRes)[1]
           # paste0("Loaded: ", query[["fcspath"]])
+          uiConf$dimrChn <- v$data$visualizationMethods()[1]
         }
       }
   #   }else{
@@ -29,23 +38,14 @@ server <- function(input, output, session) {
   
   ## Scatter plot methods
   visualizationMethods <- reactive({
-    if(is.null(v$data) || is.null(v$data$visualizationMethods)){
-      return(NULL)
-    }else{
-      return(v$data$visualizationMethods)
-    }
+    req(v$data, v$data$visualizationMethods)
+    return(v$data$visualizationMethods)
   })
   
   ## Scatter plot functions
   visualizationFunctions <- reactive({
-    if(is.null(v$data) || is.null(v$data$clusterRes)){
-      return(NULL)
-    }else{
-      return(c(names(v$data$clusterRes), 
-               "Sample",
-               "Density",
-               "None"))
-    }
+    req(v$data, v$data$clusterRes)
+    return(names(v$data$clusterRes))
   })
   
   ## cluster methods
@@ -267,21 +267,16 @@ server <- function(input, output, session) {
   
   ##-----cluster plot-----
   output$C_PlotMethod <- renderUI({
-      if(is.null(v$data) || is.null(visualizationMethods())){
-          return(NULL)
-      }else{
-          selectInput('c_PlotMethod', 'Visualization Method:', choices = visualizationMethods(), 
-                      selected = visualizationMethods()[1], width = "100%")
-      }   
+    req(v$data, visualizationMethods())
+    selectInput('c_PlotMethod', 'Place cells using:', choices = visualizationMethods(), 
+                selected = uiConf$dimrChn, width = "100%")
+    # selected = visualizationMethods()[1], width = "100%")
   })
   
   output$C_PlotFunction <- renderUI({
-      if(is.null(v$data) || is.null(visualizationFunctions())){
-          return(NULL)
-      }else{
-          selectInput('c_PlotFunction', 'Cluster By:', choices = visualizationFunctions(), 
-                      selected = visualizationFunctions()[1], width = "100%")
-      }   
+    req(v$data, visualizationFunctions())
+    selectInput('c_PlotFunction', 'Clusters of:', choices = visualizationFunctions(), 
+                selected = uiConf$clusChn, width = "100%")
   })
   
   output$C_markerSelect <- renderUI({
@@ -302,69 +297,73 @@ server <- function(input, output, session) {
   })
   
   output$C_clusterSelect <- renderUI({
-      if(is.null(v$data) || is.null(v$data$clusterRes) || is.null(input$c_PlotFunction))
-          return(NULL)
-      if(input$c_PlotFunction %in% c("Sample", "Density","None")){
-          return(NULL)
-      }else{
-          clusterMethod <- input$c_PlotFunction
-          clusterIDs <- sort(unique(v$data$clusterRes[[clusterMethod]]))
-          selectizeInput('c_clusterSelect', 'Clusters Filter:', 
-                         choices = clusterIDs, selected = clusterIDs, 
-                         multiple = TRUE, width = "100%")
-          # checkboxGroupInput('p_clusterSelect', strong('Select Clusters:'), 
-          #                    clusterIDs, selected = clusterIDs, inline = TRUE)
-      }   
+    req(v$data, v$data$clusterRes, uiConf$clusChn, input$c_PlotColor)
+    if(input$c_PlotColor != "Cluster") # %in% c("Sample", "Density","None"))
+      return(NULL)
+    clusterMethod <- uiConf$clusChn # input$c_PlotFunction
+    clusterIDs <- sort(unique(v$data$clusterRes[[clusterMethod]]))
+    selectizeInput('c_clusterSelect', 'Clusters Filter:', 
+                   choices = clusterIDs, selected = clusterIDs, 
+                   multiple = TRUE, width = "100%")
+    # checkboxGroupInput('p_clusterSelect', strong('Select Clusters:'), 
+    #                    clusterIDs, selected = clusterIDs, inline = TRUE)
   })
+  
+  observeEvent(input$c_PlotMethod, { uiConf$dimrChn <- input$c_PlotMethod })
+
+  observeEvent(input$c_PlotFunction, { uiConf$clusChn <- input$c_PlotFunction })
   
   ## Complex dependencies here: --> (depends on)
   ## C_ScatterPlotInput --> c_PlotMethod + c_clusterSelect 
   ## c_clusterSelect --> c_PlotMethod
   ## carefull checkings are applied to solve concurrency conflicts
   C_ScatterPlotInput <- function(){
-      if(is.null(v$data) || is.null(input$c_PlotMethod) || 
-         is.null(input$c_PlotFunction) || is.null(input$c_clusterSelect)){
-          return(NULL)
-      }else if(!all(input$c_clusterSelect %in% v$data$clusterRes[[input$c_PlotFunction]]) &&
-               !(input$c_PlotFunction %in% c("Sample", "Density","None"))){
-          return(NULL)
+    req(v$data, input$c_PlotMethod, uiConf$clusChn, input$c_PlotColor)
+    # if(!all(input$c_clusterSelect %in% v$data$clusterRes[[input$c_PlotFunction]]) &&
+    #    !(input$c_PlotColor %in% c("Sample", "Density","None"))){
+    #   return(NULL)
+    # }
+    
+    withProgress(message="Generating Cluster Scatter Plot", value=0, {
+      if(input$c_PlotColor %in% c("Sample", "Density", "None")){
+        clusterSelect <- NULL
+        clusterColor <- NULL
       }else{
-          
-          withProgress(message="Generating Cluster Scatter Plot", value=0, {
-              if(input$c_PlotFunction %in% c("Sample", "Density", "None")){
-                  clusterSelect <- NULL
-                  clusterColor <- NULL
-              }else{
-                  clusterSelect <- input$c_clusterSelect
-                  clusterMethod <- input$c_PlotFunction
-                  if(!is.null(c$clusterCol[[clusterMethod]])){
-                      clusterColor <- c$clusterCol[[clusterMethod]]
-                  }else{
-                      cluster_num <- length(unique(v$data$clusterRes[[clusterMethod]]))
-                      clusterColor <- rainbow(cluster_num)
-                  }
-              }
-              gp <- scatterPlot(obj = v$data,
-                                plotMethod = input$c_PlotMethod,
-                                plotFunction = input$c_PlotFunction,
-                                pointSize = input$C_PointSize,
-                                addLabel = input$C_addLabel,
-                                labelSize = input$C_LabelSize,
-                                sampleLabel = FALSE,
-                                FlowSOM_k = input$C_FlowSOM_k, 
-                                selectCluster = clusterSelect,
-                                selectSamples = input$samples, 
-                                facetPlot = input$C_facetPlot,
-                                labelRepel = input$C_labelRepel,
-                                removeOutlier = TRUE,
-                                clusterColor = clusterColor)
-              incProgress(1/2)
-              plot(gp)
-              incProgress(1/2)
-          })
+        clusterSelect <- input$c_clusterSelect
+        clusterMethod <- uiConf$clusChn # input$c_PlotFunction
+        if(!is.null(c$clusterCol[[clusterMethod]])){
+          clusterColor <- c$clusterCol[[clusterMethod]]
+        }else{
+          cluster_num <- length(unique(v$data$clusterRes[[clusterMethod]]))
+          clusterColor <- rainbow(cluster_num)
+        }
       }
+      if (input$c_PlotColor == "Cluster"){
+        plotFunction <- uiConf$clusChn
+      } else {
+        plotFunction <- input$c_PlotColor
+      }
+      gp <- scatterPlot(
+        obj = v$data,
+        plotMethod = uiConf$dimrChn,  # input$c_PlotMethod,
+        plotFunction = plotFunction, # input$c_PlotFunction,
+        pointSize = input$C_PointSize,
+        addLabel = input$C_addLabel,
+        labelSize = input$C_LabelSize,
+        sampleLabel = FALSE,
+        FlowSOM_k = input$C_FlowSOM_k, 
+        selectCluster = clusterSelect,
+        selectSamples = input$samples, 
+        facetPlot = input$C_facetPlot,
+        labelRepel = input$C_labelRepel,
+        removeOutlier = TRUE,
+        clusterColor = clusterColor)
+      incProgress(1/2)
+      plot(gp)
+      incProgress(2/2)
+    })
   }
-  
+
   output$C_ScatterPlot <- renderPlot({
       C_ScatterPlotInput()
   }, height = 900, width = 950)
@@ -424,7 +423,7 @@ server <- function(input, output, session) {
           
           if (i <= length(clusterLabel)){
               x <- clusterLabel[i]
-              colourPicker::colourInput(inputId=paste0('cluster_', i, '_col'), 
+              colourpicker::colourInput(inputId=paste0('cluster_', i, '_col'), 
                                         label=paste0('Cluster ', x," Colour :"), 
                                         value = clusterColor[i], showColour = "both", 
                                         palette = "square")
@@ -598,23 +597,22 @@ server <- function(input, output, session) {
     markers <- raw_markers[order(raw_markers)]
     updateSelectizeInput(session, "m_heatmapmarkerSelect", selected = markers)
   })
-  
+
   M_heatmapPlotInput <- reactive({
-      if(is.null(v$data) || is.null(input$m_plotCluster) || is.null(input$m_heatmapmarkerSelect))
-          return(NULL)
-      heatMap(data = v$data, 
-              clusterMethod = input$m_plotCluster, 
-              type = input$M_plotMethod, 
-              dendrogram = input$M_heatmap_dendrogram,
-              colPalette = input$M_heatmap_colorPalette,
-              selectSamples = input$samples,
-              selectMarkers = input$m_heatmapmarkerSelect,
-              cex_row_label= input$M_rowLabelSize, 
-              cex_col_label= input$M_colLabelSize, 
-              scaleMethod = input$M_scaleMethod)
-      dev.copy2pdf(file = "cytofkit_shinyAPP_marker_heatmap.pdf",
-                   width=as.integer(input$tab_w), 
-                   height=as.integer(input$tab_h))
+    req(v$data, isolate(uiConf$dimrChn), input$m_heatmapmarkerSelect)
+    heatMap(data = v$data, 
+            clusterMethod = isolate(uiConf$dimrChn), # input$m_plotCluster, 
+            type = input$M_plotMethod, 
+            dendrogram = input$M_heatmap_dendrogram,
+            colPalette = input$M_heatmap_colorPalette,
+            selectSamples = input$samples,
+            selectMarkers = input$m_heatmapmarkerSelect,
+            cex_row_label= input$M_rowLabelSize, 
+            cex_col_label= input$M_colLabelSize, 
+            scaleMethod = input$M_scaleMethod)
+    dev.copy2pdf(file = "cytofkit_shinyAPP_marker_heatmap.pdf",
+                 width=as.integer(input$tab_w), 
+                 height=as.integer(input$tab_h))
   })
   
   output$M_heatmapPlot <- renderPlot({
@@ -647,12 +645,9 @@ server <- function(input, output, session) {
   
   ##-----level plot-----
   output$M_PlotMethod <- renderUI({
-      if(is.null(v$data) || is.null(visualizationMethods())){
-          return(NULL)
-      }else{
-          selectInput('m_PlotMethod', 'Visualization Method:', choices = visualizationMethods(), 
-                      selected = visualizationMethods()[1], width = "100%")
-      }   
+    req(v$data, visualizationMethods())
+    selectInput('m_PlotMethod', 'Place cells using:', choices = visualizationMethods(), 
+                selected = uiConf$dimrChn, width = "100%")
   })
   
   output$M_PlotMarker <- renderUI({
@@ -673,32 +668,31 @@ server <- function(input, output, session) {
     updateSelectizeInput(session, "m_PlotMarker", selected = markers)
   })
   
+  observeEvent(input$m_PlotMethod, { uiConf$dimrChn <- input$m_PlotMethod })
+  
   M_markerExpressionPlotInput <- function(){
-      if(is.null(v$data) || is.null(input$m_PlotMethod) || is.null(isolate(input$m_PlotMarker))){
-          return(NULL)
-      }else{
-          withProgress(message="Generating Marker Expression Plot", value=0, {
-            gp <- scatterPlot(obj = v$data,
-                              plotMethod = input$m_PlotMethod,
-                              plotFunction = isolate(input$m_PlotMarker),
-                              pointSize = input$M_PointSize,
-                              alpha = input$M_Alpha,
-                              addLabel = FALSE,
-                              labelSize = input$S_LabelSize,
-                              sampleLabel = FALSE,
-                              FlowSOM_k = input$C_FlowSOM_k, 
-                              selectSamples = input$samples, 
-                              facetPlot = FALSE,
-                              colorPalette = input$M_colorPalette,
-                              labelRepel = FALSE,
-                              removeOutlier = TRUE,
-                              globalScale = ifelse(input$M_ScaleOptions == "Global", TRUE, FALSE),
-                              centerScale = ifelse(input$M_scaledData == "Centered", TRUE, FALSE))
-              incProgress(1/2)
-              plot(gp)
-              incProgress(1/2)
-          })
-      }
+    req(v$data, uiConf$dimrChn, isolate(input$m_PlotMarker))
+    withProgress(message="Generating Marker Expression Plot", value=0, {
+      gp <- scatterPlot(obj = v$data,
+                        plotMethod = uiConf$dimrChn, # input$m_PlotMethod,
+                        plotFunction = isolate(input$m_PlotMarker),
+                        pointSize = input$M_PointSize,
+                        alpha = input$M_Alpha,
+                        addLabel = FALSE,
+                        labelSize = input$S_LabelSize,
+                        sampleLabel = FALSE,
+                        FlowSOM_k = input$C_FlowSOM_k, 
+                        selectSamples = input$samples, 
+                        facetPlot = FALSE,
+                        colorPalette = input$M_colorPalette,
+                        labelRepel = FALSE,
+                        removeOutlier = TRUE,
+                        globalScale = ifelse(input$M_ScaleOptions == "Global", TRUE, FALSE),
+                        centerScale = ifelse(input$M_scaledData == "Centered", TRUE, FALSE))
+      incProgress(1/2)
+      plot(gp)
+      incProgress(2/2)
+    })
   }
   
   output$M_markerExpressionPlot <- renderPlot({
