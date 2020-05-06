@@ -275,10 +275,12 @@ cytof_clusterPlot <- function(data, xlab, ylab, cluster, sample, title = "cluste
     col_legend_row <- ceiling(cluster_num/15)
     size_legend_row <- ceiling(sample_num/4)
     grid_row_num <- round(sqrt(sample_num))
-    if (sample_num >= 8) {
+    if (sample_num <= 4) {
+        shape_value <- c(1:sample_num) + 14
+    } else if (sample_num <= 26) {
         shape_value <- LETTERS[1:sample_num]
     } else {
-        shape_value <- c(1:sample_num) + 15
+        shape_value <- rep(20, sample_num)
     }
     if (is.null(point_size)) {
         point_size <- ifelse(nrow(data) > 10000, 1, 1.5)

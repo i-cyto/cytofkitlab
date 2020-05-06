@@ -18,3 +18,4 @@ of a FCS file (or the first if not specified) and format them for the analysis.
 
 ### BUG FIXES
 * exporting FCS is still available.
+* PDF plots stop when more than 26 samples. Partially fixed.
