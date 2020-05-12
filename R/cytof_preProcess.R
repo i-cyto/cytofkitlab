@@ -35,6 +35,12 @@ cytof_exprsMerge <- function(fcsFiles,
     transformMethod <- match.arg(transformMethod)
     mergeMethod <- match.arg(mergeMethod)
     
+    # Quick and dummy check that all FCS have matched/aligned channels
+    fs <- tryCatch(flowCore::read.flowSet(fcsFiles, which.lines = 1:9),
+                   error = function(err) NULL )
+    if (is.null(fs)) stop("Check that all FCS have exactly the channels.")
+    
+    # Read all data
     exprsL <- mapply(cytof_exprsExtract, fcsFiles, 
                      MoreArgs = list(comp = comp, 
                                      transformMethod = transformMethod, 
