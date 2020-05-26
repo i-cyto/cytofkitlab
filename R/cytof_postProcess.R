@@ -84,7 +84,7 @@ cytof_writeResults <- function(analysis_results,
     ## save analysis results to RData files
     if(saveToRData){
         objFile <- paste0(projectName, ".RData")
-        save(analysis_results, file = objFile)
+        save(analysis_results, file = objFile, version = 3)
         cat("R object is saved in ", objFile, "\n")
         message("  **THIS R OBJECT IS THE INPUT OF SHINY APP!**  ")
     }
