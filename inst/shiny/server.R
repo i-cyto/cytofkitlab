@@ -599,9 +599,9 @@ server <- function(input, output, session) {
   })
 
   M_heatmapPlotInput <- reactive({
-    req(v$data, isolate(uiConf$dimrChn), input$m_heatmapmarkerSelect)
+    req(v$data, isolate(uiConf$clusChn), input$m_heatmapmarkerSelect)
     heatMap(data = v$data, 
-            clusterMethod = isolate(uiConf$dimrChn), # input$m_plotCluster, 
+            clusterMethod = isolate(uiConf$clusChn), # input$m_plotCluster, 
             type = input$M_plotMethod, 
             dendrogram = input$M_heatmap_dendrogram,
             colPalette = input$M_heatmap_colorPalette,
