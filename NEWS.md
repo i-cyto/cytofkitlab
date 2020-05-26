@@ -1,6 +1,6 @@
 # News for Package **cytofkitlab**
 
-## Changes in version cytofkitlab 1.11.4 (2019-04-15)
+## Changes in version cytofkitlab 1.11.5 (2019-04-15)
 
 ### MODIFICATIONS
 * Official start of cytofkitlab; a new name to avoid package conflict when debuging.
