@@ -976,15 +976,27 @@ cytof_addToFCS <- function(data,
             keyval[[paste0("$P", channel_number, "R")]] <- toString(channel_range)  # Range
             keyval[[paste0("$P", channel_number, "E")]] <- "0,0"  # Exponent
             keyval[[paste0("$P", channel_number, "N")]] <- channel_name  # Name
-            keyval[[paste0("P", channel_number, "BS")]] <- 0
-            keyval[[paste0("P", channel_number, "MS")]] <- 0
-            keyval[[paste0("P", channel_number, "DISPLAY")]] <- "LIN"  # data display
+            # The following keywords are not essential
+            # keyval[[paste0("P", channel_number, "BS")]] <- 0
+            # keyval[[paste0("P", channel_number, "MS")]] <- 0
+            # keyval[[paste0("P", channel_number, "DISPLAY")]] <- "LIN"  # data display
             #add keyval for clusterID and annotation
         }
         
+        # Remove flowCore keywords
+        kwd_flowcore <- grep("^flowCore_\\$P", names(keyval))
+        kwd_flowcore <- c(kwd_flowcore, grep("^transformation$", names(keyval)))
+        if (length(kwd_flowcore)) keyval <- keyval[-kwd_flowcore]
+
         pData(params) <- pd
         out_frame <- flowFrame(exprs = sub_exprs, parameters = params, description = keyval)
 
+        # ReRemove flowCore keywords
+        keyval <- keyword(out_frame)
+        kwd_flowcore <- grep("^flowCore_\\$P", names(keyval))
+        kwd_flowcore <- c(kwd_flowcore, grep("^transformation$", names(keyval)))
+        if (length(kwd_flowcore)) keyword(out_frame) <- keyval[-kwd_flowcore]
+        
         #### similar to changes made on 23 Jan 2019 by jinmiao chen
         #### to ensure tsne and clustering show on flowjo
         #out_frame <- out_frame[,c((ncol(fcs@exprs)+1):ncol(out_frame@exprs),1:ncol(fcs@exprs))]
