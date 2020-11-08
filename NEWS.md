@@ -1,5 +1,16 @@
 # News for Package **cytofkitlab**
 
+## Changes in version cytofkitlab 1.11.6 (2019-11-08)
+
+### MODIFICATIONS
+* the cytof_relocateResults allows to interactively specify the directory of the input FCS files and of the output results. Files and RData object can be moved from one computer to another one easily.
+* a log has been initiated in the analysis_results object and will be filled.
+* when exporting FCS all flowCore keywords are now removed.
+
+### BUG FIXES
+* .
+
+
 ## Changes in version cytofkitlab 1.11.5 (2019-04-15)
 
 ### MODIFICATIONS

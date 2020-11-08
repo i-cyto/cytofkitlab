@@ -2,7 +2,7 @@ Package: cytofkitlab
 Type: Package
 Title: cytofkitlab: a fork of cytofkit, an integrated mass cytometry data analysis pipeline
 Version: 1.11.6
-Date: 2020-04-10
+Date: 2020-11-08
 Authors@R: c(
   person("Jinmiao ", "Chen", role = "aut", email = "Chen_Jinmiao@immunol.a-star.edu.sg"),
   person("Hao", "Chen", role = "aut", email = ""),
@@ -55,4 +55,4 @@ Imports:
     uwot,
     vegan
 Encoding: UTF-8
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1

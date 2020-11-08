@@ -19,7 +19,7 @@
 #' @importFrom ggplot2 ggplot ggsave aes_string facet_wrap geom_point geom_rug theme_bw theme xlab
 #'   ylab ggtitle coord_fixed guides guide_legend scale_shape_manual scale_colour_manual aes geom_line
 #' @importFrom reshape2 dcast
-#' @importFrom flowCore write.FCS flowFrame inverseLogicleTransform
+#' @importFrom flowCore write.FCS flowFrame inverseLogicleTransform keyword
 #' @importFrom grDevices dev.off pdf rainbow
 #' @importFrom graphics par
 #' @importFrom utils read.table write.csv
