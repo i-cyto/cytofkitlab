@@ -135,7 +135,7 @@ cytof_relocateResults <- function(overwrite = FALSE) {
         ck_res <- gsub("(\\.[^.]+)$", sprintf("_%08X\\1", as.numeric(format(Sys.time(), "%s"))), ck_res)
     }
     # sprintf("%s_%08X", out_dir, as.numeric(format(Sys.time(), "%s")))
-    save(analysis_results, file = ck_res, envir = ckl_RData_env)
+    save("analysis_results", file = ck_res, envir = ckl_RData_env)
     message("The modified RData file is ", ck_res)
     invisible(ck_res)
 }
