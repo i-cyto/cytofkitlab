@@ -831,7 +831,7 @@ cytof_progressionPlot <- function(data, markers, clusters,
 #' @export
 #' 
 #' @return New fcs files stored under \code{analyzedFCSdir}
-#' @importMethodsFrom flowCore keyword
+#' @importFrom flowCore keyword
 #' @importFrom Biobase  exprs exprs<- description description<- pData pData<- 
 cytof_addToFCS <- function(data, 
                            rawFCSdir,
@@ -995,7 +995,7 @@ cytof_addToFCS <- function(data,
         keyval <- keyword(out_frame)
         kwd_flowcore <- grep("^flowCore_\\$P", names(keyval))
         kwd_flowcore <- c(kwd_flowcore, grep("^transformation$", names(keyval)))
-        if (length(kwd_flowcore)) keyword(out_frame) <- keyval[-kwd_flowcore]
+        if (length(kwd_flowcore)) flowCore::keyword(out_frame) <- keyval[-kwd_flowcore]
         
         #### similar to changes made on 23 Jan 2019 by jinmiao chen
         #### to ensure tsne and clustering show on flowjo
