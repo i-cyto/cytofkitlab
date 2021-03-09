@@ -125,7 +125,7 @@ readCytofkitFCS <- function(
         # Simplify sampleID
         sampleID <- gsub("^cytofkit_", "", FCSFileNames[i], ignore.case = TRUE)
         sampleID <- gsub("\\.fcs", "", sampleID, ignore.case = TRUE)
-        x <- rbind(x, data.frame(sampleID, exprs))
+        x <- rbind(x, data.frame(sampleID, exprs, check.names = FALSE))
     }
     
     # Make sampleID a factor
