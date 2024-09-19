@@ -238,7 +238,7 @@ minDistToHigher <- function(data, rho, ifParallel = FALSE) {
         ## assign maximal distance to the one has highest rho
         ## the nearest neighbor ID for the one has highest rho doesn't matter,
         ## because it will be assigned as the first peak
-        apply(drMix, 1, function(x){c(min(x), which.min(x))})
+        apply(drMix, 1, function(x){ i = which.min(x) ; c(x[i], i)})
     }, data = data, rho = rho, .parallel = ifParallel)
     
     deltaWid <- do.call(cbind, deltaWidList)
