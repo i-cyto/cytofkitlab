@@ -2,7 +2,7 @@
 % Please edit documentation in R/cytofkit_shiny_explorer.R
 \name{cytofkit_shiny_explorer}
 \alias{cytofkit_shiny_explorer}
-\title{A Shiny Appliaction to interactively explore the analysis results}
+\title{A Shiny Application to interactively explore the analysis results}
 \usage{
 cytofkit_shiny_explorer(RData = NULL, onServer = FALSE, port = NULL)
 }
