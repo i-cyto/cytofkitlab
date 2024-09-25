@@ -17,13 +17,14 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Samuel Granjeaud \email{samuel.granjeaud@inserm.fr}
+\strong{Maintainer}: Samuel Jully \email{jullysamuel17@gmail.com}
 
 Authors:
 \itemize{
   \item Jinmiao  Chen \email{Chen_Jinmiao@immunol.a-star.edu.sg}
   \item Hao Chen
   \item Matthew Myint \email{a0124008@u.nus.edu}
+  \item Samuel Granjeaud \email{samuel.granjeaud@inserm.fr}
 }
 
 }

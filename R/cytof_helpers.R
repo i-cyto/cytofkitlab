@@ -139,3 +139,27 @@ cytof_relocateResults <- function(overwrite = FALSE) {
     message("The modified RData file is ", ck_res)
     invisible(ck_res)
 }
+
+#' Time Difference Calculation
+#'
+#' This function calculates the difference between two time points (`start_time` and `end_time`) 
+#' and returns the result formatted as "HH:MM:SS.SS". The difference is measured in seconds.
+#'
+#' @param start_time Starting time (POSIXct object).
+#' @param end_time Ending time (POSIXct object).
+#'
+#' @return A character string representing the time difference formatted as "HH:MM:SS.SS".
+#' @export
+#'
+#' @examples
+#' start_time <- Sys.time()
+#' Sys.sleep(5)
+#' end_time <- Sys.time()
+#' time_difference(start_time, end_time)  # "00:00:05.00"
+time_difference <- function(start_time, end_time) {
+  diff <- as.numeric(difftime(end_time, start_time, units = "secs"))
+  hrs <- floor(diff / 3600)
+  mins <- floor((diff %% 3600) / 60)
+  secs <- round(diff %% 60, 2)
+  return(sprintf("%02d:%02d:%05.2f", hrs, mins, secs))
+}
