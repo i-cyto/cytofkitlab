@@ -1,4 +1,4 @@
-#' Function for launching the user friendly GUI client for \code{cytofkit-package}
+#' Function for launching the user friendly GUI client for \code{cytofkit}
 #' 
 #' This GUI provides an easy way to apply \code{cytofkit} package. 
 #' Main parameters for running 'cytofkit' main function were integrated in this GUI, 
@@ -6,10 +6,10 @@
 #' The \code{cytofkit} analysis will be automatically started after submitting.
 #' 
 #' @author Hao Chen
-#' @return the GUI for \code{cytofkit-package}
+#' @return the GUI for \code{cytofkit}
 #' @import tcltk
 #' @export
-#' @seealso \code{\link{cytofkit-package}}, \code{\link{cytofkit}}
+#' @seealso \code{\link{cytofkit}}
 #' @references \url{http://signbioinfo.github.io/cytofkit/}
 #' @examples
 #' #cytofkit_GUI()  # remove the hash symbol to run
