@@ -17,7 +17,8 @@ cytof_exprsExtract(
   l_a = 0,
   a_a = 1,
   a_b = 1,
-  a_c = 0
+  a_c = 0,
+  rename_rc = TRUE
 )
 }
 \arguments{
@@ -46,6 +47,8 @@ cytof_exprsExtract(
 \item{a_b}{Positive double that corresponds to a scale factor of the arcsinh transformation, \code{arcsinh} = asinh(a + b * x) + c).}
 
 \item{a_c}{Positive double that corresponds to another scale factor of the arcsinh transformation, \code{arcsinh} = asinh(a + b * x) + c).}
+
+\item{rename_rc}{boolean to rename or not rows and columns of the expresion matrix.}
 }
 \value{
 A transformed expression data matrix, row names added as \code{filename_cellID}, column names added as \code{name<desc>}.

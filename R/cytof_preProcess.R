@@ -118,97 +118,201 @@ cytof_exprsMerge <- function(fcsFiles,
 #' @param a_a Positive double that corresponds to the base of the arcsinh transformation, \code{arcsinh} = asinh(a + b * x) + c).
 #' @param a_b Positive double that corresponds to a scale factor of the arcsinh transformation, \code{arcsinh} = asinh(a + b * x) + c).
 #' @param a_c Positive double that corresponds to another scale factor of the arcsinh transformation, \code{arcsinh} = asinh(a + b * x) + c).
+#' @param rename_rc boolean to rename or not rows and columns of the expresion matrix.
 #' 
 #' @return A transformed expression data matrix, row names added as \code{filename_cellID}, column names added as \code{name<desc>}.
-#' @importFrom flowCore read.FCS compensate estimateLogicle logicleTransform parameters transformList arcsinhTransform biexponentialTransform
-#' @importMethodsFrom flowCore transform
 #' @importClassesFrom flowCore transformList
 #' @export
 #' @examples
 #' d <- system.file('extdata',package='cytofkitlab')
 #' fcsFile <- list.files(d,pattern='.fcs$',full=TRUE)
 #' transformed <- cytof_exprsExtract(fcsFile)
-cytof_exprsExtract <- function(fcsFile, 
-                               verbose = FALSE, 
-                               comp = FALSE, 
-                               transformMethod = c("autoLgcl", "cytofAsinh", "logicle", "arcsinh", "none"), 
-                               scaleTo = NULL, 
-                               q = 0.05,
-                               l_w = 0.1, l_t = 4000, l_m = 4.5, l_a = 0,
-                               a_a = 1, a_b = 1, a_c =0) {
+cytof_exprsExtract <- function(
+        fcsFile, 
+        verbose = FALSE, 
+        comp = FALSE, 
+        transformMethod = c("autoLgcl", "cytofAsinh", "logicle", "arcsinh", "none"), 
+        scaleTo = NULL, 
+        q = 0.05,
+        l_w = 0.1, l_t = 4000, l_m = 4.5, l_a = 0,
+        a_a = 1, a_b = 1, a_c =0,
+        rename_rc = TRUE
+) {
     
-    transformMethod <- match.arg(transformMethod)
+    ## load FCS file
+    fcs <- cytof_readFCS(
+        fcsFile, 
+        comp = comp, 
+        verbose = verbose
+    )
+
+    ## transform exprs
+    fcs <- cytof_transfFCS(
+        fcs, 
+        transformMethod = transformMethod, 
+        scaleTo = scaleTo, 
+        q = q,
+        l_w = l_w, l_t = l_t, l_m = l_m, l_a = l_a,
+        a_a = a_a, a_b = a_b, a_c = a_c,
+        rename_rc = rename_rc
+    )
+
+    ## done
+    return(exprs(fcs))
+}
+
+
+#' Read a FCS file with compensation and return a flowFrame
+#'
+#' Read a FCS file with compensation and no transformation.
+#'
+#' @param fcsFile The name of the FCS file.
+#' @param comp If \verb{TRUE}, does compensation  by compensation matrix
+#'   contained in FCS. Argument also accepts a compensation matrix to be
+#'   applied. Otherwise \verb{FALSE}.
+#' @param verbose If \verb{TRUE}, print the message details of FCS loading.
+#'
+#' @return A flowFrame, read with no transformation at all, except compensation
+#'   if asked. See \code{cytof_transfFCS}, to transform expression.
+#' @importFrom flowCore read.FCS compensate
+#' @export
+#' @examples
+#' d <- system.file('extdata', package = 'cytofkitlab')
+#' fcsFiles <- list.files(d, pattern = '\\.fcs$', full=TRUE)
+#' fcs_flowFrame <- cytof_readFCS(fcsFiles[1])
+cytof_readFCS <- function(
+        fcsFile, 
+        comp = FALSE, 
+        verbose = FALSE
+) {
     
-    ## load FCS files
-    name <- sub(".fcs$", "", basename(fcsFile))
+    ## load FCS file
     if (verbose) {
-        fcs <- read.FCS(fcsFile, transformation = FALSE, truncate_max_range = FALSE, min.limit = NULL)
+        fcs <- read.FCS(
+            fcsFile, transformation = FALSE, 
+            truncate_max_range = FALSE, min.limit = NULL)
     } else {
-        fcs <- suppressWarnings(read.FCS(fcsFile, transformation = FALSE, truncate_max_range = FALSE, min.limit = NULL))
+        fcs <- suppressWarnings(read.FCS(
+            fcsFile, transformation = FALSE, 
+            truncate_max_range = FALSE, min.limit = NULL))
     }
     
     ## compensation
-    if(is.matrix(comp) || is.data.frame(comp)){
-        fcs <- applyComp(fcs, comp)
-        cat("    Compensation is applied on", fcsFile, "\n")
-    }else if(isTRUE(comp)) {
+    comp_matrix <- NULL
+    if (is.matrix(comp) || is.data.frame(comp)) {
+        comp_matrix <- comp
+    } else if (isTRUE(comp)) {
         # See discussion keywords at
         # https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2892967/#S2title
         comp_matrix <- fcs@description[["$SPILLOVER"]]  # FCS 3.1
-        if(is.null(comp_matrix)) {
+        if (is.null(comp_matrix)) {
             comp_matrix <- fcs@description[["SPILL"]]
-            if(is.null(comp_matrix)) {
+            if (is.null(comp_matrix)) {
                 comp_matrix <- fcs@description[["$COMP"]]  # FCS 3.0
             }
         }
-        if(!is.null(comp_matrix)) {
-            fcs <- applyComp(fcs, comp_matrix)
-            cat("    Compensation is applied on ", fcsFile, "\n")
-        }else{
-            warning("Cannot find compensation matrix in the FCS file!
-                    Please CHECK the keyword of 'SPILL', '$SPILLOVER', or '$COMP'
-                    in the FCS file and make sure it stores the compensation matrix.")
+        if (is.null(comp_matrix)) {
+            warning(
+                "Cannot find compensation matrix in FCS file '", basename(fcsFile),
+                "'. Please CHECK the keyword of 'SPILL', '$SPILLOVER', or '$COMP' ",
+                "in the FCS file and make sure it stores the compensation matrix.")
         }
     }
+    if (!is.null(comp_matrix)) {
+        fcs <- applyComp(fcs, comp_matrix)
+        if (verbose)
+            message("Compensation is applied on ", basename(fcsFile))
+    }
+        
+    ## done
+    return(fcs)
+}
 
-    ## match marker names to get marker ID, use all if NULL 
-    pd <- fcs@parameters@data
-
-        ## Exclude "Time", "Event" channel
-        exclude_channels <- grep("Time|Event", colnames(fcs@exprs), ignore.case = TRUE)
-        marker_id <- setdiff(seq_along(colnames(fcs@exprs)), exclude_channels)
-
+#' Transform the expression/intensity values of a FCS file (flowFrame)
+#'
+#' Transform the FCS expression data with transformation. Transformation methods
+#' include \code{autoLgcl}, \code{cytofAsinh}, \code{logicle} (customizable) and
+#' \code{arcsinh} (customizable).
+#'
+#' @param fcs The flowFrame object after reading a FCS file.
+#' @param transformMethod Data Transformation method, including \code{autoLgcl},
+#'   \code{cytofAsinh}, \code{logicle} and \code{arcsinh}, or \code{none} to
+#'   avoid transformation.
+#' @param scaleTo Scale the expression to a specified range c(a, b), default is
+#'   NULL.
+#' @param q Quantile of negative values removed for auto w estimation, default
+#'   is 0.05, parameter for autoLgcl transformation.
+#' @param l_w Linearization width in asymptotic decades, parameter for logicle
+#'   transformation.
+#' @param l_t Top of the scale data value, parameter for logicle transformation.
+#' @param l_m Full width of the transformed display in asymptotic decades,
+#'   parameter for logicle transformation.
+#' @param l_a Additional negative range to be included in the display in
+#'   asymptotic decades, parameter for logicle transformation.
+#' @param a_a Positive double that corresponds to the base of the arcsinh
+#'   transformation, \code{arcsinh} = asinh(a + b * x) + c.
+#' @param a_b Positive double that corresponds to a scale factor of the arcsinh
+#'   transformation, \code{arcsinh} = asinh(a + b * x) + c.
+#' @param a_c Positive double that corresponds to another scale factor of the
+#'   arcsinh transformation, \code{arcsinh} = asinh(a + b * x) + c.
+#' @param rename_rc boolean to rename or not rows and columns of the expresion matrix.
+#'
+#' @return A transformed flowFrame, row names added as \code{filename_cellID},
+#'   column names added as \code{name<desc>}.
+#' @importFrom flowCore estimateLogicle logicleTransform parameters
+#'   transformList arcsinhTransform biexponentialTransform
+#' @importMethodsFrom flowCore transform
+#' @importClassesFrom flowCore flowFrame transformList
+#' @export
+#' @examples
+#' d <- system.file('extdata', package = 'cytofkitlab')
+#' fcsFiles <- list.files(d, pattern = '\\.fcs$', full=TRUE)
+#' ff_raw <- cytof_readFCS(fcsFiles[1])
+#' ff_transformed <- cytof_transfFCS(
+#'     ff_raw, transformMethod = "arcsinh", a_a = 0, a_b = 1/5, a_c =0, rename_rc = FALSE)
+#' t(rbind(range(ff_raw, "data"), range(ff_transformed), range(ff_transformed, "data")))
+cytof_transfFCS <- function(
+        fcs, 
+        transformMethod = c("autoLgcl", "cytofAsinh", "logicle", "arcsinh", "none"), 
+        scaleTo = NULL, 
+        q = 0.05,
+        l_w = 0.1, l_t = 4000, l_m = 4.5, l_a = 0,
+        a_a = 1, a_b = 1, a_c =0,
+        rename_rc = TRUE
+) {
+    
+    transformMethod <- match.arg(transformMethod)
+    
+    ## Exclude "Time", "Event" channel
+    # TODO: there are more channels to ignore
+    exclude_channels <- grep("Time|Event", colnames(fcs@exprs), ignore.case = TRUE)
+    marker_id <- setdiff(seq_along(colnames(fcs@exprs)), exclude_channels)
+    # size parameters
     size_channels <- grep("FSC|SSC", colnames(fcs@exprs), ignore.case = TRUE)
     transMarker_id <- setdiff(marker_id, size_channels)
-   
+    
     ## exprs transformation
-    switch(transformMethod,
-           cytofAsinh = {
-               data <- fcs@exprs
-               data[ ,transMarker_id] <- apply(data[ ,transMarker_id, drop=FALSE], 2, cytofAsinh)
-               exprs <- data[ ,marker_id, drop=FALSE]
-           },
-           autoLgcl = {
-               trans <- autoLgcl(fcs, channels = colnames(fcs@exprs)[transMarker_id], q = q)
-               transformed <- flowCore::transform(fcs, trans)
-               exprs <- transformed@exprs[, marker_id, drop=FALSE]
-           },
-           logicle = {
-               data <- fcs@exprs
-               trans <- flowCore::logicleTransform(w = l_w, t = l_t, m = l_m, a = l_a)
-               data[ ,transMarker_id] <- apply(data[ ,transMarker_id, drop=FALSE], 2, trans)
-               exprs <- data[ ,marker_id, drop=FALSE]
-           },
-           arcsinh = {
-               data <- fcs@exprs
-               trans <- flowCore::arcsinhTransform(a = a_a, b = a_b, c = a_c)
-               data[ ,transMarker_id] <- apply(data[ ,transMarker_id, drop=FALSE], 2, trans)
-               exprs <- data[ ,marker_id, drop=FALSE]
-           },
-           none = {
-               data <- fcs@exprs
-               exprs <- data[ ,marker_id, drop=FALSE]
-           })
+    exprs <- exprs(fcs)
+    switch(
+        transformMethod,
+        cytofAsinh = {
+            exprs[ ,transMarker_id] <- apply(exprs[ ,transMarker_id, drop=FALSE], 2, cytofAsinh)
+        },
+        autoLgcl = {
+            trans <- autoLgcl(fcs, channels = colnames(fcs@exprs)[transMarker_id], q = q)
+            transformed <- flowCore::transform(fcs, trans)
+            exprs[ ,transMarker_id] <- transformed@exprs[, transMarker_id, drop=FALSE]
+        },
+        logicle = {
+            trans <- flowCore::logicleTransform(w = l_w, t = l_t, m = l_m, a = l_a)
+            exprs[ ,transMarker_id] <- apply(exprs[ ,transMarker_id, drop=FALSE], 2, trans)
+        },
+        arcsinh = {
+            trans <- flowCore::arcsinhTransform(a = a_a, b = a_b, c = a_c)
+            exprs[ ,transMarker_id] <- apply(exprs[ ,transMarker_id, drop=FALSE], 2, trans)
+        },
+        none = {
+        })
     
     ## apply linear transformation for the "FSC-x", "SSC-x" channel if exists
     if(length(size_channels) > 0){
@@ -216,27 +320,64 @@ cytof_exprsExtract <- function(fcsFile,
             used_size_channel <- size_channels[size_channels %in% marker_id]
             used_size_channel_id <- match(used_size_channel, marker_id)
             exprs[ ,used_size_channel_id] <- apply(exprs[ , used_size_channel_id, drop=FALSE], 2, 
-                                               function(x) scaleData(x, range=c(0, 4.5)))
+                                                   function(x) scaleData(x, range=c(0, 4.5)))
         }
     }
     
-    ## rescale all data to same range
+    ## scale all data to same range
     if (!is.null(scaleTo)) {
         exprs <- apply(exprs, 2, function(x) scaleData(x, scaleTo))
     }
-     
-    ## add rownames and colnames   
-    col_names <- paste0(pd$name, "<", pd$desc,">")
-    colnames(exprs) <- col_names[marker_id]
-    row.names(exprs) <- paste(name, 1:nrow(exprs), sep = "_")
+
+    ## transformations done
+    if (!rename_rc) {
+        exprs(fcs) <- exprs
+    } else {
+        ## add rownames
+        fcsFile <- keyword(fcs, "FILENAME")[[1]]
+        name <- sub("\\.fcs$", "", basename(fcsFile), ignore.case = TRUE)
+        rownames(exprs) <- paste(name, 1:nrow(exprs), sep = "_")
+        exprs(fcs) <- exprs
+        ## rename channel names
+        pd <- fcs@parameters@data
+        col_names <- paste0(pd$name, "<", pd$desc,">")
+        flowCore::colnames(fcs)[marker_id] <- col_names[marker_id]
+    }
     
-    return(exprs)
+    ## done
+    return(fcs)
+}
+
+
+#' Get the parameters aka channel names formatted for cytofkit, i.e. name and
+#' description
+#'
+#' @param fcsFile FCS file name to read.
+#' @param cat boolean to cat the result on the R console.
+#'
+#' @return a vector of parameters for cytofkit analysis
+#' @export
+#'
+#' @examples
+#' # None yet
+cytof_getParamFCS <- function(
+        fcsFile,
+        cat = FALSE
+) {
+    
+    ff = cytof_readFCS(fcsFile)
+    pd = ff@parameters@data
+    res = paste0(pd$name, "<", pd$desc,">")
+    if (cat) {
+        cat('"', paste(res, collapse = '",\n"'),'"\n', sep = "")
+    } else
+        return(res)
 }
 
 
 #' apply compensation on the FCS expression data
 #' 
-#' @param fcs FCS file.
+#' @param fcs FlowFrame.
 #' @param compMatrix Compensation matrix.
 #' @noRd
 #' @return Compensated expression value
@@ -255,13 +396,14 @@ scaleData <- function(x, range = c(0, 4.5)) {
 }
 
 
-#' Noise reduced arsinh transformation 
-#' 
-#' Inverse hyperbolic sine transformation (arsinh) with a cofactor of 5, reduce noise from negative values
-#' Adopted from Plos Comp reviewer
-#' 
+#' Noise reduced asinh transformation
+#'
+#' Inverse hyperbolic sine transformation (asinh) with a cofactor of 5, reduce
+#' noise from negative values Adopted from Plos Comp reviewer
+#'
 #' @param value A vector of numeric values.
-#' @param cofactor Cofactor for asinh transformation, default 5 for mass cytometry data.
+#' @param cofactor Cofactor for asinh transformation, default 5 for mass
+#'   cytometry data.
 #' @noRd
 #' @return transformed value
 cytofAsinh <- function(value, cofactor = 5) {
