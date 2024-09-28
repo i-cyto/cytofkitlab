@@ -68,23 +68,6 @@ cytof_dimReduction <- function(data,
     
     marker_filtered_data <- data[, marker_id]
 
-    # Function to merge default options with dots arguments
-    merge_options <- function(prefix, defaults, dots) {
-        prefix.patt <- paste0("^", prefix, "\\.")
-        prefix.dots <- grep(prefix.patt, names(dots))
-        if (length(prefix.dots)) {
-            # extract specific options and remove prefix
-            new.names <- gsub(prefix.patt, "", names(dots[prefix.dots]))
-            prefix.dots <- dots[prefix.dots]
-            names(prefix.dots) <- new.names
-            # merge arguments and defaults
-            prefix.opts <- c(prefix.dots, defaults)
-            prefix.opts <- prefix.opts[unique(names(prefix.opts))]
-        } else
-            prefix.opts <- defaults
-        list(options = prefix.opts)
-    }
-    
     start_time <- Sys.time()
     switch(method,
            tsne={
