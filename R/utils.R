@@ -15,6 +15,7 @@
 #' @return a list of named values aka options.
 #'
 #' @examples
+#' # None
 merge_options <- function(prefix, defaults, dots) {
     prefix.patt <- paste0("^", prefix, "\\.")
     prefix.dots <- grep(prefix.patt, names(dots))
