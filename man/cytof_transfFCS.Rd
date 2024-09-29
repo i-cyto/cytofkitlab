@@ -16,6 +16,7 @@ cytof_transfFCS(
   a_a = 1,
   a_b = 1,
   a_c = 0,
+  ...,
   rename_rc = TRUE
 )
 }
@@ -51,6 +52,8 @@ transformation, \code{arcsinh} = asinh(a + b * x) + c.}
 
 \item{a_c}{Positive double that corresponds to another scale factor of the
 arcsinh transformation, \code{arcsinh} = asinh(a + b * x) + c.}
+
+\item{...}{currently unused as all used parameters are listed above.}
 
 \item{rename_rc}{boolean to rename or not rows and columns of the expresion matrix.}
 }

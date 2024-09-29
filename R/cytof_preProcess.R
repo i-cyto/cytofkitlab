@@ -40,11 +40,20 @@ cytof_exprsMerge <- function(fcsFiles,
                    error = function(err) NULL )
     if (is.null(fs)) stop("Check that all FCS have exactly the channels.")
     
+    dots = list(...)
+    if (cytof_verbose()) message(
+        "Compensation = ", comp, " Transformation: ", transformMethod, "\n",
+        "scaleTo = ", scaleTo, " mergeMethod = ", mergeMethod, "\n",
+        "fixedNum = ", fixedNum, " sampleSeed = ", sampleSeed, "\n",
+        "extra args: ", paste(names(dots), dots, sep = "=", collapse = ", ")
+    )
+    
+    # TODO: sample cells file by file to lower memory consumption
     # Read all data
     exprsL <- mapply(cytof_exprsExtract, fcsFiles, 
-                     MoreArgs = list(comp = comp, 
+                     MoreArgs = c(list(comp = comp, 
                                      transformMethod = transformMethod, 
-                                     scaleTo = scaleTo, ...), 
+                                     scaleTo = scaleTo), dots),
                      SIMPLIFY = FALSE)
 
     if(is.numeric(sampleSeed))
@@ -61,6 +70,7 @@ cytof_exprsMerge <- function(fcsFiles,
         }
       }
     }
+    # TODO: order sample id to keep time ordering
     switch(mergeMethod,
            ceil = {
                mergeFunc <- function(x) {
@@ -110,14 +120,7 @@ cytof_exprsMerge <- function(fcsFiles,
 #' @param comp If \verb{TRUE}, does compensation  by compensation matrix contained in FCS. Agrument also accepts a compensation matrix to be applied. Otherwise \verb{FALSE}.
 #' @param transformMethod Data Transformation method, including \code{autoLgcl}, \code{cytofAsinh}, \code{logicle} and \code{arcsinh}, or \code{none} to avoid transformation.
 #' @param scaleTo Scale the expression to a specified range c(a, b), default is NULL.
-#' @param q Quantile of negative values removed for auto w estimation, default is 0.05, parameter for autoLgcl transformation.
-#' @param l_w Linearization width in asymptotic decades, parameter for logicle transformation.
-#' @param l_t Top of the scale data value, parameter for logicle transformation.
-#' @param l_m Full width of the transformed display in asymptotic decades, parameter for logicle transformation.
-#' @param l_a Additional negative range to be included in the display in asymptotic decades, parameter for logicle transformation.
-#' @param a_a Positive double that corresponds to the base of the arcsinh transformation, \code{arcsinh} = asinh(a + b * x) + c).
-#' @param a_b Positive double that corresponds to a scale factor of the arcsinh transformation, \code{arcsinh} = asinh(a + b * x) + c).
-#' @param a_c Positive double that corresponds to another scale factor of the arcsinh transformation, \code{arcsinh} = asinh(a + b * x) + c).
+#' @param ... parameters passed to transformation.
 #' @param rename_rc boolean to rename or not rows and columns of the expresion matrix.
 #' 
 #' @return A transformed expression data matrix, row names added as \code{filename_cellID}, column names added as \code{name<desc>}.
@@ -133,9 +136,7 @@ cytof_exprsExtract <- function(
         comp = FALSE, 
         transformMethod = c("autoLgcl", "cytofAsinh", "logicle", "arcsinh", "none"), 
         scaleTo = NULL, 
-        q = 0.05,
-        l_w = 0.1, l_t = 4000, l_m = 4.5, l_a = 0,
-        a_a = 1, a_b = 1, a_c =0,
+        ...,
         rename_rc = TRUE
 ) {
     
@@ -145,15 +146,12 @@ cytof_exprsExtract <- function(
         comp = comp, 
         verbose = verbose
     )
-
     ## transform exprs
     fcs <- cytof_transfFCS(
         fcs, 
         transformMethod = transformMethod, 
         scaleTo = scaleTo, 
-        q = q,
-        l_w = l_w, l_t = l_t, l_m = l_m, l_a = l_a,
-        a_a = a_a, a_b = a_b, a_c = a_c,
+        ...,
         rename_rc = rename_rc
     )
 
@@ -186,6 +184,10 @@ cytof_readFCS <- function(
         verbose = FALSE
 ) {
     
+    if (cytof_verbose()) message(
+        "Extract from file: ", fcsFile, "\n",
+        "Compensation = ", comp
+    )
     ## load FCS file
     if (verbose) {
         fcs <- read.FCS(
@@ -255,6 +257,7 @@ cytof_readFCS <- function(
 #'   transformation, \code{arcsinh} = asinh(a + b * x) + c.
 #' @param a_c Positive double that corresponds to another scale factor of the
 #'   arcsinh transformation, \code{arcsinh} = asinh(a + b * x) + c.
+#' @param ... currently unused as all used parameters are listed above.
 #' @param rename_rc boolean to rename or not rows and columns of the expresion matrix.
 #'
 #' @return A transformed flowFrame, row names added as \code{filename_cellID},
@@ -278,9 +281,16 @@ cytof_transfFCS <- function(
         q = 0.05,
         l_w = 0.1, l_t = 4000, l_m = 4.5, l_a = 0,
         a_a = 1, a_b = 1, a_c =0,
+        ...,
         rename_rc = TRUE
 ) {
     
+    dots <- list(...)
+    pars <- as.list(match.call(expand.dots = FALSE))
+    if (cytof_verbose()) message(
+        paste(names(pars), pars, sep = "=", collapse = ", "), "\n",
+        paste(names(dots), dots, sep = "=", collapse = ", ")
+    )
     transformMethod <- match.arg(transformMethod)
     
     ## Exclude "Time", "Event" channel
