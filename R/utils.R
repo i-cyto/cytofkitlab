@@ -31,3 +31,25 @@ merge_options <- function(prefix, defaults, dots) {
         prefix.opts <- defaults
     list(options = prefix.opts)
 }
+
+#' cytof_verbose gets/sets the verbosity level for functions that need it
+#'
+#' @param lev integer level of verbosity. When defined, this set the level. When
+#'   missing the current level is reported. If level has not been defined, 0 is
+#'   returned.
+#'
+#' @return verbosity
+#' @export
+#'
+#' @examples
+#' cytof_verbose()
+#' cytof_verbose(1)
+#' cytof_verbose()
+cytof_verbose <- function(lev) {
+    if (missing(lev)) {
+        lev <- options("cytofkit.verbose")[[1]]
+        if (is.null(lev)) lev <- 0
+        return(lev)
+    }
+    options(cytofkit.verbose = lev)
+}
