@@ -158,25 +158,21 @@ create_and_list_folders <- function(destinationfile, numero_exe, PROJET) {
   ))
 }
 
-#' CyTOF Data Mapping Function
+#' Map RAW FCS files to cytofkit result and transfer reduced dimensions and
+#' clusterings.
 #'
-#' This function maps raw CyTOF data to a set of pseudo-coordinates derived from dimensionality reduction methods (e.g., UMAP or t-SNE).
-#' It takes raw and processed FCS files as inputs, performs a nearest-neighbor search based on specified markers,
-#' and adds the pseudo-coordinates to the raw data. The function saves the updated raw data with the new coordinates 
-#' as both FCS and RData files and modifies the FCS file descriptions.
+#' @param ck_res file name of a result
+#' @param res_map_fcs_dir directory to write the mapped FCS files
+#' @param knn number of nearest neighbors
+#' @param average_dr method to average reduced dimension coordinates. Either
+#'   "arithmetic", either "softmax" weighted, the latter being slower.
+#' @param prefix prefix to the resulting FCS file name
+#' @param suffix suffix to the resulting FCS file name
+#' @param comp apply compensation
+#' @param transformMethod transformation method
+#' @param ... parameters passed for the transformation
 #'
-#' @param rawFCSdir The directory containing the raw FCS files.
-#' @param fdrFCRdir The directory containing the FDR (full-dimensional reduction) analyzed FCS files.
-#' @param fdrprojectname The project name for the FDR data.
-#' @param resultDir The directory where the resulting files (mapped FCS and RData) will be saved.
-#' @param markers A character vector of markers to use for matching between raw and FDR data.
-#' @param dims The number of dimensions for the pseudo-coordinates (default is 2).
-#' @param transformMethod The transformation method to apply (options: "autoLgcl", "cytofAsinh", "logicle", "arcsinh", "none").
-#' @param method The dimensionality reduction method used (options: "tsne", "pca", "isomap", "diffusionmap", "umap", "NULL").
-#' @param k The number of nearest neighbors to search for in the KNN algorithm.
-#' @param algorithm The KNN search algorithm (options: "kd_tree", "cover_tree", "CR", "brute").
-#'
-#' @return A data frame containing the raw data with added pseudo-coordinates.
+#' @return none
 #' @importFrom FNN knnx.index
 #' @importFrom Biobase AnnotatedDataFrame
 #' @importFrom flowCore read.FCS
@@ -186,135 +182,90 @@ create_and_list_folders <- function(destinationfile, numero_exe, PROJET) {
 #' @export
 #'
 #' @examples
-#' cytof_mapping("path/to/rawFCS", "path/to/fdrFCS", "ProjectName", "path/to/results", markers = c("CD3", "CD19"), dims = 2)
-cytof_mapping <- function( 
-    rawFCSdir,
-    fdrFCRdir, 
-    fdrprojectname,
-    resultDir, 
-    markers=NULL, 
-    dims=2, 
-    transformMethod=c("autoLgcl", "cytofAsinh", "logicle", "arcsinh", "none"),
-    method=c("tsne", "pca", "isomap", "diffusionmap", "umap", "NULL"), 
-    k=10, 
-    algorithm=c("kd_tree", "cover_tree", "CR", "brute")
-)
-{
-  
-  # Define file paths
-  homefile_fdr <- file.path(fdrFCRdir, paste(fdrprojectname, "analyzedFCS", sep = "_"))
-  
-  # Load raw FCS files
-  raw_files <- list.files(rawFCSdir, pattern = ".fcs$", full.names = TRUE)
-  if (length(raw_files) == 0) stop("No raw FCS files found in the specified directory.")
-  
-  # Extract base names from raw files
-  raw_file_names <- basename(raw_files)
-  raw_file_base_names <- sub("_c[0-9]+_.*$", "", raw_file_names)
-  
-  # Read raw data
-  raw_data <- lapply(raw_files, function(f) exprs(read.FCS(f, transformation = FALSE)))
-  
-  # Load processed FCS files with UMAP/TSNE coordinates
-  fdr_files <- list.files(homefile_fdr, pattern = ".fcs$", full.names = TRUE)
-  if (length(fdr_files) == 0) stop("No FDR FCS files found in the specified directory.")
-  
-  # Extract base names from FDR files
-  fdr_file_names <- basename(fdr_files)
-  fdr_file_base_names <- sub("^cytofkit_", "", fdr_file_names)
-  fdr_file_base_names <- sub("_c[0-9]+_.*$", "", fdr_file_base_names)
-  
-  # Read FDR data
-  fdr_data <- lapply(fdr_files, function(f) exprs(read.FCS(f, transformation = FALSE)))
-  
-  # Match raw and FDR files by base names
-  file_mapping <- match(raw_file_base_names, fdr_file_base_names)
-  if (any(is.na(file_mapping))) stop("Some raw files do not match any FDR files.")
-  
-  # Generate UMAP/TSNE column names based on the number of dimensions
-  pseudo_columns <- paste0(method,"_", 1:dims, "_linear")
-  pseudo_coords <- do.call(rbind, lapply(fdr_data[file_mapping], function(df) df[, pseudo_columns, drop = FALSE]))
-  
-  # Rename UMAP/TSNE columns
-  colnames(pseudo_coords) <- paste0("pseudo_coord_", method,"_", 1:dims)
-  
-  # Check if the markers are present in both raw and FDR data
-  if (is.null(markers)) stop("Markers must be specified.")
-  params <- sub("<.+?>", "", markers)
-  raw_params_present <- params[params %in% colnames(raw_data[[1]])]
-  fdr_params_present <- params[params %in% colnames(fdr_data[[1]])]
-  
-  if (length(raw_params_present) == 0 || length(fdr_params_present) == 0) {
-    stop("Specified markers are not present in both raw and FDR data.")
+#' # None
+cytof_map_knn <- function(
+    ck_res,
+    res_map_fcs_dir = "%s_map_k%d",
+    knn = 1,
+    average_dr = "arithmetic",
+    prefix = "",
+    suffix = "_k%d",
+    comp = TRUE,
+    transformMethod,
+    ...
+) {
+  # output directory
+  prj_name = basename(dirname(ck_res))
+  prj_dir = dirname(ck_res)
+  if (grepl("%d", res_map_fcs_dir))
+    res_map_fcs_dir = sub("%d", knn, res_map_fcs_dir)
+  if (grepl("%s", res_map_fcs_dir))
+    res_map_fcs_dir = sub("%s", prj_name, res_map_fcs_dir)
+  res_map_fcs_dir = file.path(prj_dir, res_map_fcs_dir)
+  # setup output directory
+  if (!dir.exists(res_map_fcs_dir))
+    dir.create(res_map_fcs_dir, recursive = TRUE)
+  # suffix
+  if (grepl("%d", suffix))
+    suffix = sprintf(suffix, knn)
+  # load result for cytofkit and extract parameters
+  load(ck_res)
+  res_raw_fcs_dir = analysis_results$rawFCSdir
+  res_markers = analysis_results$dimRedMarkers
+  # reference data = landmarks
+  refrnc <- analysis_results$expressionData[,res_markers]
+  # DR and C to add as channels
+  to_add <- do.call(cbind, analysis_results$dimReducedRes)
+  tcols <- colnames(to_add)
+  to_add <- cbind(to_add, do.call(cbind, analysis_results$clusterRes))
+  ccols <- setdiff(colnames(to_add), tcols)
+  # parse RAW FCS files
+  fcs_files = unlist(analysis_results$sampleNames)
+  for (fcs in fcs_files) {
+    # debug: fcs = fcs_files[1]
+    # file path to RAW FCS
+    fn <- file.path(res_raw_fcs_dir, paste0(fcs, ".fcs"))
+    # read and transform the FCS file
+    ff <- cytof_readFCS(fn, comp = comp)
+    ft <- cytof_transfFCS(ff, transformMethod = transformMethod, ...)
+    # set query data to be mapped to landmarks
+    unkown <- exprs(ft)[,res_markers]
+    # identify NN
+    nn <- FNN::get.knnx(refrnc, unkown, k = knn, "kd_tree")
+    # update the expression value with NN
+    # values from 1 NN or as initilization
+    to_add_i <- to_add[nn$nn.index[,1], ]
+    if (knn > 1) {
+      # arithmetic mean of coordinates
+      if (average_dr == "arithmetic") {
+        for (col in tcols) {
+          coords <- apply(nn$nn.index, 2, function(j)
+            to_add[j, col])
+          to_add_i[, col] <- rowMeans(coords)
+        }
+      }
+      # softmax weighted mean of coordinates
+      if (average_dr == "softmax") {
+        for (col in tcols) {
+          coords <- apply(nn$nn.index, 2, function(j)
+            to_add[j, col])
+          weights <- exp(-nn$nn.dist)
+          weights <- weights / rowSums(weights)
+          to_add_i[, col] <- rowSums(coords * weights)
+        }
+      }
+      # relative majority for clustering
+      for (col in ccols) {
+        tbl <- table(rep(1:nrow(to_add_i), knn),
+                     to_add[nn$nn.index, col])
+        cl_ids <- as.numeric(colnames(tbl))
+        to_add_i[,col] <- cl_ids[apply(tbl, 1, which.max)]
+      }
+    }
+    # append information
+    out_frame <- flowCore::fr_append_cols(ff, to_add_i)
+    # write to disk
+    suppressWarnings(write.FCS(out_frame, file.path(
+      res_map_fcs_dir, sprintf("%s%s%s.fcs", prefix, fcs, suffix))))
   }
-  
-  # Create matrices of markers for raw and FDR files
-  raw_features_combined <- do.call(rbind, lapply(raw_data, function(df) df[, raw_params_present, drop = FALSE]))
-  fdr_features_combined <- do.call(rbind, lapply(fdr_data, function(df) df[, fdr_params_present, drop = FALSE]))
-  
-  # Filter out empty or non-numeric columns
-  raw_features_combined <- raw_features_combined[, colSums(is.na(raw_features_combined)) == 0, drop = FALSE]
-  fdr_features_combined <- fdr_features_combined[, colSums(is.na(fdr_features_combined)) == 0, drop = FALSE]
-  
-  # Perform nearest-neighbor search
-  knn_indices <- FNN::knnx.index(data = fdr_features_combined, query = raw_features_combined, k = k, algorithm = algorithm)
-  
-  # Map the nearest neighbors
-  nearest_neighbors <- knn_indices[, 1]
-  
-  # Add UMAP/TSNE coordinates to the raw data
-  raw_data_with_pseudo_coord <- as.data.frame(raw_features_combined)
-  raw_data_with_pseudo_coord$pseudo_coord_1 <- pseudo_coords[nearest_neighbors, 1]
-  raw_data_with_pseudo_coord$pseudo_coord_2 <- pseudo_coords[nearest_neighbors, 2]
-  
-  
-  # Save the mapped files
-  for (i in seq_along(raw_files)) {
-    original_filename <- basename(raw_files[i])
-    raw_file_data <- raw_data[[i]]
-    
-    # Combine raw data with pseudo coordinates
-    raw_file_with_pseudo_coord <- cbind(raw_file_data,
-                                        pseudo_coord_1 = pseudo_coords[nearest_neighbors, 1],
-                                        pseudo_coord_2 = pseudo_coords[nearest_neighbors, 2]
-    )
-    
-    # Generate new file name and path
-    new_filename <- paste0(method,"_", original_filename)
-    new_fcs_path <- file.path(resultDir, new_filename)
-    
-    # Save as flowFrame and write FCS file
-    flow_data <- flowFrame(as.matrix(raw_file_with_pseudo_coord))
-    write.FCS(flow_data, new_fcs_path)
-    
-    # Save as RData
-    rdata_path <- sub("\\.fcs$", ".RData", new_fcs_path)
-    save(raw_file_with_pseudo_coord, file = rdata_path)
-    
-    message("File saved: ", new_fcs_path)
-    message("RData saved: ", rdata_path)
-  }
-  
-  # Load saved FCS files and modify descriptions
-  fcs_files_map <- list.files(resultDir, pattern = ".fcs$", full.names = TRUE)
-  
-  for (i in seq_along(fcs_files_map)) {
-    raw_file <- flowCore::read.FCS(raw_files[i], transformation = FALSE)
-    raw_desc <- flowCore::pData(flowCore::parameters(raw_file))$desc 
-    
-    fcs_file_map <- flowCore::read.FCS(fcs_files_map[i], transformation = FALSE)
-    map_params <- flowCore::pData(flowCore::parameters(fcs_file_map))
-    
-    # Update marker descriptions
-    map_desc <- map_params$desc
-    map_desc[1:length(raw_desc)] <- raw_desc
-    map_params$desc <- map_desc
-    annotated_params <- Biobase::AnnotatedDataFrame(map_params)
-    flowCore::parameters(fcs_file_map) <- annotated_params
-    
-    # Save FCS file with updated descriptions
-    flowCore::write.FCS(fcs_file_map, fcs_files_map[i])
-    message("FCS file with updated descriptions saved: ", fcs_files_map[i])
-  }
-  return(raw_data_with_pseudo_coord)
 }

@@ -157,6 +157,9 @@ cytofkit <- function(fcsFiles = getwd(),
 
     ## split ... arguments
     dots <- list(...)
+    if (cytof_verbose())
+        message("Given arguments: ",
+                paste(names(dots), dots, sep = "=", collapse = ", "))
     # dimension reduction args
     dots.dr.idx <- sapply(
         c("tsne", "pca", "isomap", "umap"),
@@ -172,8 +175,12 @@ cytofkit <- function(fcsFiles = getwd(),
         })
     dots.clustering <- dots[unlist(dots.cl.idx)]
     # remaining args for standard processing
-    dots <- dots[-c(unlist(dots.dr.idx), unlist(dots.cl.idx))]
-
+    dots.remove.idx <- c(unlist(dots.dr.idx), unlist(dots.cl.idx))
+    dots <- dots[setdiff(seq_along(dots), dots.remove.idx)]
+    if (cytof_verbose())
+        message("Remaining arguments: ",
+                paste(names(dots), dots, sep = "=", collapse = ", "))
+    
     set.seed(seed)
     ## get transformed, combined exprs data
     message("Extract expression data...")

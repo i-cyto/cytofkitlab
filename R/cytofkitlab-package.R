@@ -84,6 +84,7 @@
 #' @seealso \code{\link{cytofkit}}, \code{\link{cytofkit_GUI}}
 #' @references \url{https://github.com/JinmiaoChenLab/cytofkit}
 #' 
+#' @name cytofkitlab-package
 
 
 ## usethis namespace: start

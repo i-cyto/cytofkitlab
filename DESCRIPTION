@@ -1,15 +1,14 @@
 Package: cytofkitlabv2
 Type: Package
 Title: cytofkitlab: a fork of cytofkit, an integrated mass cytometry data analysis pipeline
-Version: 1.11.7
-Date: 2020-11-08
+Version: 1.11.8
+Date: 2024-09-29
 Authors@R: c(
   person("Jinmiao ", "Chen", role = "aut", email = "Chen_Jinmiao@immunol.a-star.edu.sg"),
   person("Hao", "Chen", role = "aut", email = ""),
   person("Matthew", "Myint", role = "aut", email = "a0124008@u.nus.edu"),
-  person("Samuel", "Granjeaud", role = c("aut"), email = "samuel.granjeaud@inserm.fr"),
-  person("Samuel", "Jully", role = c("aut", "cre"), email = "jullysamuel17@gmail.com")
-  )
+  person("Samuel", "Granjeaud", role = "aut", email = "samuel.granjeaud@inserm.fr"),
+  person("Samuel", "Jully", role = c("aut", "cre"), email = "jullysamuel17@gmail.com"))
 Description: An integrated mass cytometry data analysis pipeline that enables
     simultaneous illustration of cellular diversity and progression.
 License: Artistic-2.0
@@ -23,7 +22,7 @@ VignetteBuilder: knitr
 Suggests:
     knitr,
     RUnit,
-    testthat (>= 3.0.0),
+    testthat,
     BiocGenerics,
     cytofast
 Imports:
@@ -58,5 +57,4 @@ Imports:
     FNN,
     vegan
 Encoding: UTF-8
-RoxygenNote: 7.3.2
-Config/testthat/edition: 3
+RoxygenNote: 7.3.1

@@ -5,19 +5,16 @@
 \title{Add data to the original FCS files}
 \usage{
 cytof_addToFCS(
-  data,
+  to_add,
   rawFCSdir,
   origSampNames = NULL,
   analyzedFCSdir,
   transformed_cols = c("tsne_1", "tsne_2"),
-  cluster_cols = c("cluster"),
-  clusterIDs = NULL,
-  specifySampleNames = NULL,
-  inLgclTrans = TRUE
+  cluster_cols = c("cluster")
 )
 }
 \arguments{
-\item{data}{The new data matrix to be added in.}
+\item{to_add}{The data matrix to add/append as columns/channels.}
 
 \item{rawFCSdir}{The directory containing the original fcs files.}
 
@@ -28,12 +25,6 @@ cytof_addToFCS(
 \item{transformed_cols}{The column name of the dimension transformed data in \code{data}.}
 
 \item{cluster_cols}{The column name of the cluster data in \code{data}.}
-
-\item{clusterIDs}{Table of cell cluster IDs for each clustering method}
-
-\item{specifySampleNames}{Used only if sample names differ from those in raw fcs.}
-
-\item{inLgclTrans}{If \verb{TRUE}, apply the inverse lgcl transformation to the cluster data before saving}
 }
 \value{
 New fcs files stored under \code{analyzedFCSdir}

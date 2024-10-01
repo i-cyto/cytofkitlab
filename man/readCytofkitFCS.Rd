@@ -49,7 +49,7 @@ To successfully read the .FCS files created by cytofkit make sure that
   NB: No compensation nor transformation is applied to the data.
 }
 \examples{
-
+\dontrun{
 # Directory of input FCS
 dirFCS <- system.file('extdata',package='cytofkitlab')
 # For demo, simulate a dir of results and copy the demo result .RData file
@@ -77,6 +77,7 @@ cfData <- readCytofkitFCS(
     clusterID = "Rphenograph_clusterIDs"
 )
 cfData
+}
 
 }
 \keyword{FCS,}
