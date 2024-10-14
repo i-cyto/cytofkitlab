@@ -35,7 +35,7 @@
 #' @keywords read, data, FCS, cytofast
 #'
 #' @examples
-#' 
+#' \dontrun{
 #' # Directory of input FCS
 #' dirFCS <- system.file('extdata',package='cytofkitlab')
 #' # For demo, simulate a dir of results and copy the demo result .RData file
@@ -63,6 +63,7 @@
 #'     clusterID = "Rphenograph_clusterIDs"
 #' )
 #' cfData
+#' }
 #'
 #' @export
 readCytofkitFCS <- function(
