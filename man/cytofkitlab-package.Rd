@@ -108,6 +108,7 @@ Authors:
   \item Jinmiao  Chen \email{Chen_Jinmiao@immunol.a-star.edu.sg}
   \item Hao Chen
   \item Matthew Myint \email{a0124008@u.nus.edu}
+  \item Samuel Jully \email{jullysamuel17@gmail.com}
 }
 
 
