@@ -38,8 +38,10 @@ server <- function(input, output, session) {
   
   ## Scatter plot methods
   visualizationMethods <- reactive({
-    req(v$data, v$data$visualizationMethods)
-    return(v$data$visualizationMethods)
+    # req(v$data, v$data$visualizationMethods)
+    req(v$data, v$data$dimReducedRes)
+    # return(v$data$visualizationMethods)
+    return(names(v$data$dimReducedRes))
   })
   
   ## Scatter plot functions
@@ -195,7 +197,7 @@ server <- function(input, output, session) {
   output$summaryText3 <- renderText({
     if(is.null(v$data))
       return(NULL)
-    paste0("-- ", paste(v$data$visualizationMethods, collapse =  " | "))
+    paste0("-- ", paste(names(v$data$dimReducedRes), collapse =  " | "))
   })
   
   output$summaryText4 <- renderText({

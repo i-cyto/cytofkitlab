@@ -17,7 +17,7 @@ ui <- fluidPage(
                    textOutput("rdata_desc"),
                    fluidRow(
                        column(6,
-                              actionButton("goButton", "Submit", icon = icon("hand-o-right"))
+                              actionButton("goButton", "Submit", icon = icon("hand-pointer-right"))
                        ),
                        column(6,
                               actionButton("reset", "Reset Data", icon = icon("repeat"))
@@ -188,11 +188,11 @@ ui <- fluidPage(
                                                     fluidRow(
                                                         column(3,
                                                                actionButton("C_updateClusterColor", "Update Cluster Color", 
-                                                                            icon = icon("hand-o-right"), width = "100%")
+                                                                            icon = icon("hand-pointer-right"), width = "100%")
                                                         ),
                                                         column(3, 
                                                                actionButton("C_revertClusterColor", "Revert to default", 
-                                                                            icon = icon("hand-o-right"), width = "100%")
+                                                                            icon = icon("hand-pointer-right"), width = "100%")
                                                         ),
                                                         column(6)
                                                     ),
@@ -208,7 +208,7 @@ ui <- fluidPage(
                                                         uiOutput(paste0('Cluster', i))
                                                     }),
                                                     hr(),
-                                                    actionButton("updatelabel", "Submit Cluster Label", icon = icon("hand-o-right")),
+                                                    actionButton("updatelabel", "Submit Cluster Label", icon = icon("hand-pointer-right")),
                                                     hr()),
                                            tabPanel(title="Run FlowSOM", value="C_tab4",
                                                     br(),
@@ -219,7 +219,7 @@ ui <- fluidPage(
                                                         uiOutput("C_markerSelect")
                                                     ),
                                                     hr(),
-                                                    actionButton("C_runFlowSOM", "Run FlowSOM", icon = icon("hand-pointer-o")))
+                                                    actionButton("C_runFlowSOM", "Run FlowSOM", icon = icon("hand-point-up")))
                                )
                            )),
                            
@@ -328,7 +328,7 @@ ui <- fluidPage(
                                                       )
                                                     ),
                                                     hr(),
-                                                    actionButton("M_updateDensityPlot", "Update Plot", icon = icon("hand-pointer-o")),
+                                                    actionButton("M_updateDensityPlot", "Update Plot", icon = icon("hand-point-up")),
                                                     plotOutput("M_stackDensityPlot", width = "100%")),
                                            tabPanel(title="Update Marker Names", value="M_tab4", 
                                                     h5('Type in Your New Name for Each Marker:'),
@@ -337,7 +337,7 @@ ui <- fluidPage(
                                                         uiOutput(paste0('Marker_', i, "_name"))
                                                     }),
                                                     hr(),
-                                                    actionButton("C_updateMarkerNames", "Update Marker Name", icon = icon("hand-pointer-o")))
+                                                    actionButton("C_updateMarkerNames", "Update Marker Name", icon = icon("hand-point-up")))
                                )
                            )),
                            
@@ -390,10 +390,10 @@ ui <- fluidPage(
                                                     hr(),
                                                     fluidRow(
                                                         column(3,
-                                                               actionButton("updateSampleGroups", "Submit New Sample Groups", icon = icon("hand-o-right"))
+                                                               actionButton("updateSampleGroups", "Submit New Sample Groups", icon = icon("hand-pointer-right"))
                                                         ),
                                                         column(3, 
-                                                               actionButton("revertSampleNames", "Revert to Old Sample Names", icon = icon("hand-o-right"))
+                                                               actionButton("revertSampleNames", "Revert to Old Sample Names", icon = icon("hand-pointer-right"))
                                                         ),
                                                         column(6)
                                                     ),
@@ -439,7 +439,7 @@ ui <- fluidPage(
                                                     hr(),
                                                     fluidRow(
                                                         column(3,
-                                                               actionButton("P_updateRegressionPlot", "Update Plot", icon = icon("hand-pointer-o"))
+                                                               actionButton("P_updateRegressionPlot", "Update Plot", icon = icon("hand-point-up"))
                                                         ),
                                                         column(2,
                                                                checkboxInput("P_reverseOrder", label = "Reverse Order", value = FALSE)
@@ -490,7 +490,7 @@ ui <- fluidPage(
                                                         )
                                                     ),
                                                     hr(),
-                                                    actionButton("P_runDiffusionmap", "Run Diffusionmap", icon = icon("hand-pointer-o")))
+                                                    actionButton("P_runDiffusionmap", "Run Diffusionmap", icon = icon("hand-point-up")))
                                )
                            )) 
                )
