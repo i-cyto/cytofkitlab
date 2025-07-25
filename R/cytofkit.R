@@ -76,7 +76,7 @@ cytofkit <- function(fcsFiles = getwd(),
                      openShinyAPP = FALSE, ...) {
     
     ## arguments checking
-    if (is.null(fcsFiles) || is.na(fcsFiles) || is.nan(fcsFiles)){
+    if (is.null(fcsFiles) || any(is.na(fcsFiles)) || any(is.nan(fcsFiles))){
         stop("Wrong input fcsFiles!")
     }else if (length(fcsFiles) == 1 && file.info(fcsFiles)$isdir) {
         rawFCSdir <- fcsFiles  # argument is a directory in fact
